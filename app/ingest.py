@@ -263,6 +263,8 @@ def run_ingest(cfg):
                     "us_aqi": reading["us_aqi"],
                     "pm10": reading["pm10"],
                     "pm2_5": reading["pm2_5"],
+                    "us_aqi_pm2_5": reading.get("us_aqi_pm2_5"),
+                    "us_aqi_pm10": reading.get("us_aqi_pm10"),
                 },
             )
             pbi_rows.append(build_pbi_row(name, reading))

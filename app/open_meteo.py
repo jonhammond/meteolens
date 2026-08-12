@@ -33,7 +33,7 @@ CURRENT_FIELDS = (
     "wind_gusts_10m",
 )
 
-AQ_CURRENT_FIELDS = ("us_aqi", "pm10", "pm2_5")
+AQ_CURRENT_FIELDS = ("us_aqi", "pm10", "pm2_5", "us_aqi_pm2_5", "us_aqi_pm10")
 
 TIMEOUT_SECONDS = 10
 RETRY_BACKOFF_SECONDS = 1.5

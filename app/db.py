@@ -23,7 +23,14 @@ NUMERIC_FIELDS = (
     "pm10",
     "pm2_5",
 )
-SMALLINT_FIELDS = ("relative_humidity_2m", "cloud_cover", "weather_code", "us_aqi")
+SMALLINT_FIELDS = (
+    "relative_humidity_2m",
+    "cloud_cover",
+    "weather_code",
+    "us_aqi",
+    "us_aqi_pm2_5",
+    "us_aqi_pm10",
+)
 
 
 def build_client(cfg):
@@ -104,7 +111,7 @@ def fetch_latest_per_location(client):
         .select(
             "location_id,recorded_at,temperature_2m,apparent_temperature,"
             "relative_humidity_2m,dew_point_2m,precipitation,cloud_cover,weather_code,"
-            "wind_speed_10m,wind_gusts_10m,us_aqi,pm10,pm2_5,"
+            "wind_speed_10m,wind_gusts_10m,us_aqi,pm10,pm2_5,us_aqi_pm2_5,us_aqi_pm10,"
             "temperature_2m_f,apparent_temperature_f,dew_point_2m_f,"
             "wind_speed_10m_mph,wind_gusts_10m_mph,precipitation_in"
         )
@@ -144,6 +151,8 @@ def fetch_latest_per_location(client):
                 "us_aqi": reading["us_aqi"],
                 "pm10": reading["pm10"],
                 "pm2_5": reading["pm2_5"],
+                "us_aqi_pm2_5": reading["us_aqi_pm2_5"],
+                "us_aqi_pm10": reading["us_aqi_pm10"],
                 "temperature_2m_f": reading["temperature_2m_f"],
                 "apparent_temperature_f": reading["apparent_temperature_f"],
                 "dew_point_2m_f": reading["dew_point_2m_f"],

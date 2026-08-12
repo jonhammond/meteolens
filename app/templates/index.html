@@ -14,6 +14,24 @@
   </header>
 
   <main>
+    <section class="report-section" aria-label="Power BI report">
+      {% if powerbi_embed_url %}
+        <div class="iframe-wrap">
+          <iframe
+            src="{{ powerbi_embed_url }}"
+            title="MeteoLens Power BI report"
+            loading="lazy"
+            allowfullscreen>
+          </iframe>
+        </div>
+      {% else %}
+        <div class="report-pending">
+          <p>Full report coming soon.</p>
+          <p class="report-pending-sub">The embedded Power BI dashboard will appear here once it's published.</p>
+        </div>
+      {% endif %}
+    </section>
+
     <section aria-label="Latest conditions by location">
       {% if readings %}
         <div class="card-grid">
@@ -51,6 +69,18 @@
                   <dt>Gusts</dt>
                   <dd>{{ "%.0f"|format(r.wind_gusts_10m) ~ " km/h" if r.wind_gusts_10m is not none else "—" }}</dd>
                 </div>
+                <div>
+                  <dt>AQI</dt>
+                  <dd>{{ r.us_aqi if r.us_aqi is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>AQI (PM2.5)</dt>
+                  <dd>{{ r.us_aqi_pm2_5 if r.us_aqi_pm2_5 is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>AQI (PM10)</dt>
+                  <dd>{{ r.us_aqi_pm10 if r.us_aqi_pm10 is not none else "—" }}</dd>
+                </div>
               </dl>
 
               <p class="card-time">Observed {{ r.recorded_at_display }}</p>
@@ -59,24 +89,6 @@
         </div>
       {% else %}
         <p class="empty-state">No readings yet. Check back after the next hourly ingest.</p>
-      {% endif %}
-    </section>
-
-    <section class="report-section" aria-label="Power BI report">
-      {% if powerbi_embed_url %}
-        <div class="iframe-wrap">
-          <iframe
-            src="{{ powerbi_embed_url }}"
-            title="MeteoLens Power BI report"
-            loading="lazy"
-            allowfullscreen>
-          </iframe>
-        </div>
-      {% else %}
-        <div class="report-pending">
-          <p>Full report coming soon.</p>
-          <p class="report-pending-sub">The embedded Power BI dashboard will appear here once it's published.</p>
-        </div>
       {% endif %}
     </section>
   </main>
