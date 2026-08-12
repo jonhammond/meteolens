@@ -35,12 +35,14 @@ REQUIRED_VARS = ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY")
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
-# Same 8 measurement fields the live `current`-block pipeline writes, fetched
-# here as hourly parallel arrays instead.
+# Same measurement fields the live `current`-block pipeline writes (AQ
+# excluded — out of scope for gap recovery), fetched here as hourly parallel
+# arrays instead.
 HOURLY_FIELDS = (
     "temperature_2m",
     "apparent_temperature",
     "relative_humidity_2m",
+    "dew_point_2m",
     "precipitation",
     "cloud_cover",
     "weather_code",

@@ -16,11 +16,14 @@ from app.weather_codes import describe
 NUMERIC_FIELDS = (
     "temperature_2m",
     "apparent_temperature",
+    "dew_point_2m",
     "precipitation",
     "wind_speed_10m",
     "wind_gusts_10m",
+    "pm10",
+    "pm2_5",
 )
-SMALLINT_FIELDS = ("relative_humidity_2m", "cloud_cover", "weather_code")
+SMALLINT_FIELDS = ("relative_humidity_2m", "cloud_cover", "weather_code", "us_aqi")
 
 
 def build_client(cfg):
@@ -100,8 +103,10 @@ def fetch_latest_per_location(client):
         client.table("weather_readings")
         .select(
             "location_id,recorded_at,temperature_2m,apparent_temperature,"
-            "relative_humidity_2m,precipitation,cloud_cover,weather_code,"
-            "wind_speed_10m,wind_gusts_10m"
+            "relative_humidity_2m,dew_point_2m,precipitation,cloud_cover,weather_code,"
+            "wind_speed_10m,wind_gusts_10m,us_aqi,pm10,pm2_5,"
+            "temperature_2m_f,apparent_temperature_f,dew_point_2m_f,"
+            "wind_speed_10m_mph,wind_gusts_10m_mph,precipitation_in"
         )
         .in_("location_id", list(by_id.keys()))
         .order("recorded_at", desc=True)
@@ -129,12 +134,22 @@ def fetch_latest_per_location(client):
                 "temperature_2m": reading["temperature_2m"],
                 "apparent_temperature": reading["apparent_temperature"],
                 "relative_humidity_2m": reading["relative_humidity_2m"],
+                "dew_point_2m": reading["dew_point_2m"],
                 "precipitation": reading["precipitation"],
                 "cloud_cover": reading["cloud_cover"],
                 "weather_code": reading["weather_code"],
                 "weather_desc": describe(reading["weather_code"]),
                 "wind_speed_10m": reading["wind_speed_10m"],
                 "wind_gusts_10m": reading["wind_gusts_10m"],
+                "us_aqi": reading["us_aqi"],
+                "pm10": reading["pm10"],
+                "pm2_5": reading["pm2_5"],
+                "temperature_2m_f": reading["temperature_2m_f"],
+                "apparent_temperature_f": reading["apparent_temperature_f"],
+                "dew_point_2m_f": reading["dew_point_2m_f"],
+                "wind_speed_10m_mph": reading["wind_speed_10m_mph"],
+                "wind_gusts_10m_mph": reading["wind_gusts_10m_mph"],
+                "precipitation_in": reading["precipitation_in"],
             }
         )
     results.sort(key=lambda r: r["location"])

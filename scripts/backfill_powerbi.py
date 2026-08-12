@@ -38,7 +38,7 @@ PUSH_RATE_LIMIT_SECONDS = 1.0
 READING_COLUMNS = (
     "location_id,recorded_at,temperature_2m,apparent_temperature,"
     "relative_humidity_2m,precipitation,cloud_cover,weather_code,"
-    "wind_speed_10m,wind_gusts_10m"
+    "wind_speed_10m,wind_gusts_10m,dew_point_2m,us_aqi,pm10,pm2_5"
 )
 
 

@@ -6,7 +6,12 @@ already-successful Supabase write to "error".
 """
 
 from app import db
-from app.open_meteo import OpenMeteoError, fetch_current_batch
+from app.open_meteo import (
+    AQ_CURRENT_FIELDS,
+    OpenMeteoError,
+    fetch_air_quality_batch,
+    fetch_current_batch,
+)
 from app.powerbi import PowerBIError, push_rows
 from app.weather_codes import describe
 
@@ -34,6 +39,27 @@ CLOUD_COLOR_CLEAR = "#facc15"
 CLOUD_COLOR_PARTLY = "#94a3b8"
 CLOUD_COLOR_OVERCAST = "#475569"
 CLOUD_BAND_CLEAR, CLOUD_BAND_PARTLY, CLOUD_BAND_OVERCAST = 0, 1, 2
+
+# US AQI: standard EPA breakpoints/colors, good -> hazardous.
+AQI_GOOD_MAX = 50
+AQI_MODERATE_MAX = 100
+AQI_SENSITIVE_MAX = 150
+AQI_UNHEALTHY_MAX = 200
+AQI_VERY_UNHEALTHY_MAX = 300
+AQI_COLOR_GOOD = "#22c55e"
+AQI_COLOR_MODERATE = "#facc15"
+AQI_COLOR_SENSITIVE = "#f97316"
+AQI_COLOR_UNHEALTHY = "#ef4444"
+AQI_COLOR_VERY_UNHEALTHY = "#a855f7"
+AQI_COLOR_HAZARDOUS = "#881337"
+(
+    AQI_BAND_GOOD,
+    AQI_BAND_MODERATE,
+    AQI_BAND_SENSITIVE,
+    AQI_BAND_UNHEALTHY,
+    AQI_BAND_VERY_UNHEALTHY,
+    AQI_BAND_HAZARDOUS,
+) = range(6)
 
 UNKNOWN_COLOR = "#999999"
 
@@ -81,6 +107,49 @@ def _cloud_enrichment(cloud):
     return CLOUD_COLOR_OVERCAST, CLOUD_BAND_OVERCAST
 
 
+def _aqi_enrichment(us_aqi):
+    if us_aqi is None:
+        return UNKNOWN_COLOR, -1
+    if us_aqi <= AQI_GOOD_MAX:
+        return AQI_COLOR_GOOD, AQI_BAND_GOOD
+    if us_aqi <= AQI_MODERATE_MAX:
+        return AQI_COLOR_MODERATE, AQI_BAND_MODERATE
+    if us_aqi <= AQI_SENSITIVE_MAX:
+        return AQI_COLOR_SENSITIVE, AQI_BAND_SENSITIVE
+    if us_aqi <= AQI_UNHEALTHY_MAX:
+        return AQI_COLOR_UNHEALTHY, AQI_BAND_UNHEALTHY
+    if us_aqi <= AQI_VERY_UNHEALTHY_MAX:
+        return AQI_COLOR_VERY_UNHEALTHY, AQI_BAND_VERY_UNHEALTHY
+    return AQI_COLOR_HAZARDOUS, AQI_BAND_HAZARDOUS
+
+
+# --- Imperial conversions ---------------------------------------------------
+# Mirror the Postgres generated columns (see the add_dew_point_air_quality_
+# imperial migration) so build_pbi_row's imperial fields match the DB exactly
+# for rows written going forward. None-safe since dew point/AQ are nullable.
+# Python round() is banker's rounding vs Postgres's half-away-from-zero;
+# these only diverge on exact .xx5 halfway values, which is cosmetic for a
+# dashboard.
+
+
+def _c_to_f(celsius):
+    if celsius is None:
+        return None
+    return round(celsius * 9.0 / 5.0 + 32.0, 2)
+
+
+def _kmh_to_mph(kmh):
+    if kmh is None:
+        return None
+    return round(kmh / 1.609344, 2)
+
+
+def _mm_to_in(mm):
+    if mm is None:
+        return None
+    return round(mm / 25.4, 3)
+
+
 def build_pbi_row(location_name, reading):
     """Enrich one raw reading into the exact row shape pushed to Power BI.
 
@@ -92,6 +161,7 @@ def build_pbi_row(location_name, reading):
     precip_color, precip_flag = _precip_enrichment(reading["precipitation"])
     temp_color, temp_band = _temp_enrichment(reading["temperature_2m"])
     cloud_color, cloud_band = _cloud_enrichment(reading["cloud_cover"])
+    aqi_color, aqi_band = _aqi_enrichment(reading.get("us_aqi"))
 
     return {
         "recorded_at": reading["recorded_at"].isoformat(),
@@ -111,6 +181,18 @@ def build_pbi_row(location_name, reading):
         "precip_flag": precip_flag,
         "temp_band": temp_band,
         "cloud_band": cloud_band,
+        "dew_point_2m": reading.get("dew_point_2m"),
+        "us_aqi": reading.get("us_aqi"),
+        "pm10": reading.get("pm10"),
+        "pm2_5": reading.get("pm2_5"),
+        "aqi_color": aqi_color,
+        "aqi_band": aqi_band,
+        "temperature_2m_f": _c_to_f(reading["temperature_2m"]),
+        "apparent_temperature_f": _c_to_f(reading["apparent_temperature"]),
+        "dew_point_2m_f": _c_to_f(reading.get("dew_point_2m")),
+        "wind_speed_10m_mph": _kmh_to_mph(reading["wind_speed_10m"]),
+        "wind_gusts_10m_mph": _kmh_to_mph(reading["wind_gusts_10m"]),
+        "precipitation_in": _mm_to_in(reading["precipitation"]),
     }
 
 
@@ -118,11 +200,14 @@ def run_ingest(cfg):
     """Fetch + write current conditions for every active location.
 
     Returns a summary dict: one key per location name ("ok" or
-    "error: <reason>"), plus a "powerbi" key describing the batched push
-    outcome. All locations are fetched from Open-Meteo in a single batched
-    request (one source-IP call instead of N) so a single location failing
-    never aborts the run, but a batch-level fetch failure fails every
-    location at once (there's no per-location response to salvage).
+    "error: <reason>"), plus an "air_quality" key describing the batched AQ
+    fetch outcome and a "powerbi" key describing the batched push outcome.
+    All locations are fetched from Open-Meteo in a single batched request
+    (one source-IP call instead of N) so a single location failing never
+    aborts the run, but a batch-level fetch failure fails every location at
+    once (there's no per-location response to salvage). Air quality is
+    fetched as a wholly separate request/failure domain: an AQ outage must
+    never block the weather write, so its failure only nulls the AQ columns.
     """
     client = db.build_client(cfg)
     summary = {}
@@ -141,11 +226,24 @@ def run_ingest(cfg):
         error_text = f"error: {_short(exc)}"
         for location in locations:
             summary[location["name"]] = error_text
+        summary["air_quality"] = "skipped: no weather rows"
         summary["powerbi"] = "skipped: no rows"
         return summary
 
-    for location, reading in zip(locations, readings):
+    try:
+        aq_readings = (
+            fetch_air_quality_batch(coords, api_key=cfg.OPEN_METEO_API_KEY)
+            if coords
+            else []
+        )
+        summary["air_quality"] = "ok" if aq_readings else "skipped: no rows"
+    except OpenMeteoError as exc:
+        aq_readings = [{field: None for field in AQ_CURRENT_FIELDS} for _ in readings]
+        summary["air_quality"] = f"error: {_short(exc)}"
+
+    for location, reading, aq_reading in zip(locations, readings, aq_readings):
         name = location["name"]
+        reading = {**reading, **aq_reading}
         try:
             db.ensure_weather_code(client, reading["weather_code"])
             db.upsert_reading(
@@ -156,11 +254,15 @@ def run_ingest(cfg):
                     "temperature_2m": reading["temperature_2m"],
                     "apparent_temperature": reading["apparent_temperature"],
                     "relative_humidity_2m": reading["relative_humidity_2m"],
+                    "dew_point_2m": reading["dew_point_2m"],
                     "precipitation": reading["precipitation"],
                     "cloud_cover": reading["cloud_cover"],
                     "weather_code": reading["weather_code"],
                     "wind_speed_10m": reading["wind_speed_10m"],
                     "wind_gusts_10m": reading["wind_gusts_10m"],
+                    "us_aqi": reading["us_aqi"],
+                    "pm10": reading["pm10"],
+                    "pm2_5": reading["pm2_5"],
                 },
             )
             pbi_rows.append(build_pbi_row(name, reading))
