@@ -75,25 +75,28 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 - [x] Write `scripts/backfill_powerbi.py` — replay Supabase history into a (re)created push dataset. Reuses `app.ingest.build_pbi_row` (renamed public from `_build_pbi_row`) so replayed rows are byte-identical to live pushes; paginates PostgREST with `.range()`; `--since`/`--before`/`--dry-run`/`--batch-size`; ≥1s between batches. **Push datasets have no dedupe** — always bound a replay with `--before` to exclude rows the live pipeline already pushed (cutoff for this deploy: `2026-08-12T06:00:00Z`)
 - [x] **[USER]** Run backfill (needs cloud secrets only Jon holds; run in his own terminal via `read -s` so secrets never hit history/scrollback) — done by Jon 2026-08-11: dry-run then real run with `--before 2026-08-12T06:00:00Z`, replaying the placeholder-era history (~36 rows). Live pushes take over from the 06:00 UTC cron onward
 - [x] **[USER]** Create report: temp line chart, wind combo chart, temp×humidity scatter, 3 conditional KPI cards (Field value → `*_color` columns), slicers on `weather_desc` + `location` — confirmed done by Jon 2026-08-12 (cards use Card visual + Top-1-by-Latest-`recorded_at` visual filter + fx Field-value background)
-- [ ] **[USER]** File → Embed report → Publish to web → copy embed URL → set `POWERBI_EMBED_URL` on Render → redeploy
+- [x] **[USER]** File → Embed report → Publish to web → copy embed URL → set `POWERBI_EMBED_URL` on Render → redeploy — confirmed done by Jon 2026-08-12; verified: `/` serves the iframe with the real `app.powerbi.com/view?r=...` URL (placeholder gone), and the embed URL returns 200 anonymously in ~0.5s
 
 **Accept:** report renders logged-out at the public URL and inside meteolens.jonhammond.org; slicers filter all visuals.
 
 ## Phase M8 — End-to-end verification
 
-- [ ] Local: POST `/api/ingest` with token → 200 + per-location `ok`; wrong token → 401; GET → 405
-- [ ] Supabase: one new UTC row per active location; re-run adds no dupes; publishable/anon key gets permission denied
-- [ ] Power BI: dataset row count grows after ingest; report shows the new hour
-- [ ] `https://meteolens.jonhammond.org/` resolves with valid TLS; cards match Supabase latest rows
-- [ ] cron-job.org: pre-warm at :57 and ingest at :00 succeed 3 consecutive hours
-- [ ] Public embed loads in incognito; data ≤ ~1 h stale
-- [ ] Kill test: unset one env var locally → app refuses to start
+- [x] Local: POST `/api/ingest` with token → 200 + per-location `ok`; wrong token → 401; GET → 405 — verified 2026-08-12: 405 / 401 (wrong) / 401 (absent) / 200 with all 12 `ok` (`powerbi: error` expected locally — placeholder URL)
+- [x] Supabase: one new UTC row per active location; re-run adds no dupes; publishable/anon key gets permission denied — verified: cloud has 12 distinct locations per hour bucket and **0** duplicate `(location_id, recorded_at)` pairs; immediate local ingest re-run left row count unchanged (72 → 72); local anon-key REST select → 401 (cloud anon denial verified in M1; schema unchanged since)
+- [x] Power BI: dataset row count grows after ingest; report shows the new hour — live runs return `powerbi: ok` (rows accepted by the push URL); **[USER]** confirmed 2026-08-12: report shows the latest hour and slicers filter all visuals
+- [x] `https://meteolens.jonhammond.org/` resolves with valid TLS; cards match Supabase latest rows — verified: cert `CN=meteolens.jonhammond.org` valid to 2026-11-10, `/healthz` 200 in 0.2s; `/api/latest` and rendered cards match cloud DB latest rows exactly (12/12, e.g. Denver 20.5°C @ 09:15 UTC on all three)
+- [ ] Scheduled ingest (GH Actions, replaced cron-job.org) green 3 consecutive hours — 1/3 so far (run 31582949992 at 10:00 UTC, all-`ok` incl. powerbi); awaiting 11:00 + 12:00 UTC scheduled runs
+- [x] Public embed loads in incognito; data ≤ ~1 h stale — embed URL returns 200 to an anonymous client in ~0.5s; data freshness follows from `powerbi: ok` hourly pushes; **[USER]** confirmed 2026-08-12: embed renders in an incognito window
+- [x] Kill test: unset one env var locally → app refuses to start — verified: with `INGEST_TOKEN` unset, startup raises `ConfigError: Missing required environment variable(s): INGEST_TOKEN`
 
 ---
 
 ## Session Log & Active Tasks
 
-**Last updated:** 2026-08-11
+**Last updated:** 2026-08-12
+
+- **M7 COMPLETE:** report published; `POWERBI_EMBED_URL` set on Render; live page serves the real `app.powerbi.com/view?r=...` iframe and the embed URL returns 200 anonymously.
+- **M8 nearly complete:** all one-shot checks verified (see checkboxes above). Remaining: (1) 3 consecutive green *scheduled* GH Actions runs — 1/3 at 10:00 UTC, awaiting 11:00 + 12:00 (session monitor watching; M6 accept lands at 2/2 of the same runs); (2) ~~two quick **[USER]** eyeballs~~ — **confirmed by Jon 2026-08-12**: report shows the latest hour, slicers filter all visuals, and the public embed renders in incognito.
 
 - **Current focus:** **Phase M6 jobs are LIVE** — Jon confirmed both cron-job.org jobs created and scheduled (pre-warm `:57`, ingest `:00`). DB-side proof: `weather_readings` went 12 → 24 rows across all 12 locations (newest `2026-08-12 04:45+00`), i.e. one cron-triggered ingest already succeeded with the Bearer token stored in the job config. All three M6 [USER] items confirmed by Jon (jobs + failure notifications). Remaining before M6 accept: observe two more hourly cycles green (`:00` runs at 05:00 and 06:00 UTC) with one new row/location/hour — check with `supabase db query --linked "select date_trunc('hour', recorded_at), count(*) from weather_readings group by 1 order by 1 desc limit 4"` (expect 12 per hour bucket). Note: `recorded_at` is Open-Meteo's observation timestamp (15-min steps), not the request time, so a `:00` run may land in the previous hour's bucket at `:45` — count distinct readings per location, not just bucket alignment. After M6 accept → M7 (Power BI dataset/report/embed). **M7 in progress (2026-08-11 evening):** dataset `meteolens` created in My Workspace (Historic data analysis ON), `POWERBI_PUSH_URL` set on Render, Publish-to-web menu item verified present. `scripts/backfill_powerbi.py` being written. Backfill sequencing rule: push datasets have no dedupe, so replay ONLY rows the live pipeline never pushed — everything ingested after Render redeployed with the real push URL is pushed live; use `--before 2026-08-12T06:00:00Z` (first cron hour on the new deploy) as the cutoff. **M7 retirement-notice decision (2026-08-11):** Power BI's streaming-dataset UI warns of retirement; verified via Microsoft Learn that creation stays enabled until 2027-10-31 and existing models are unaffected after — proceeding with the push dataset as planned (free-tier alternatives don't exist: Fabric RTI = paid capacity, import-mode Postgres = gateway + Windows-only Desktop). Jon should click OK on the dialog and continue; risk documented in PLAN.md Risks.
 - **Previously:** **Phase M5 is COMPLETE** — MeteoLens live at `https://meteolens.jonhammond.org` with 12 real location cards; both accept criteria verified (see M5).
