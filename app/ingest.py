@@ -66,7 +66,14 @@ def _cloud_enrichment(cloud):
     return CLOUD_COLOR_OVERCAST, CLOUD_BAND_OVERCAST
 
 
-def _build_pbi_row(location_name, reading):
+def build_pbi_row(location_name, reading):
+    """Enrich one raw reading into the exact row shape pushed to Power BI.
+
+    Pure function shared by the live per-run ingest path and
+    `scripts/backfill_powerbi.py`, so a historical replay produces
+    byte-identical rows to what the hourly pipeline sends (same
+    `recorded_at` string format, same color/band thresholds).
+    """
     precip_color, precip_flag = _precip_enrichment(reading["precipitation"])
     temp_color, temp_band = _temp_enrichment(reading["temperature_2m"])
     cloud_color, cloud_band = _cloud_enrichment(reading["cloud_cover"])
@@ -124,7 +131,7 @@ def run_ingest(cfg):
                     "wind_gusts_10m": reading["wind_gusts_10m"],
                 },
             )
-            pbi_rows.append(_build_pbi_row(name, reading))
+            pbi_rows.append(build_pbi_row(name, reading))
             summary[name] = "ok"
         except OpenMeteoError as exc:
             summary[name] = f"error: {exc}"
