@@ -62,11 +62,11 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M6 — cron-job.org wiring
 
-- [ ] **[USER]** Job 1: pre-warm GET `/healthz` at `57 * * * *`
-- [ ] **[USER]** Job 2: ingest POST `/api/ingest` at `0 * * * *` with Bearer header stored in job config
-- [ ] **[USER]** Enable failure notifications on both jobs
+- [x] **[USER]** Job 1: pre-warm GET `/healthz` at `57 * * * *` — confirmed created & scheduled by Jon
+- [x] **[USER]** Job 2: ingest POST `/api/ingest` at `0 * * * *` with Bearer header stored in job config — confirmed created & scheduled by Jon; a cron-triggered ingest already landed 12 new rows (24 total, newest `2026-08-12 04:45+00`), so the token/header wiring works end-to-end
+- [x] **[USER]** Enable failure notifications on both jobs — confirmed by Jon
 
-**Accept:** both green in execution history over 2+ hours; one new row/location/hour in Supabase.
+**Accept:** both green in execution history over 2+ hours; one new row/location/hour in Supabase. *In progress — first cron ingest verified in DB; awaiting two more hourly cycles for the 2-hour green window.*
 
 ## Phase M7 — Power BI dataset, report, embed
 
@@ -95,7 +95,8 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** **Phase M5 is COMPLETE** — MeteoLens is live in production at `https://meteolens.jonhammond.org` with 12 real location cards. Both accept criteria verified independently (see M5 above). Ready to start M6 (cron-job.org wiring) — all three M6 items are **[USER]** steps.
+- **Current focus:** **Phase M6 jobs are LIVE** — Jon confirmed both cron-job.org jobs created and scheduled (pre-warm `:57`, ingest `:00`). DB-side proof: `weather_readings` went 12 → 24 rows across all 12 locations (newest `2026-08-12 04:45+00`), i.e. one cron-triggered ingest already succeeded with the Bearer token stored in the job config. All three M6 [USER] items confirmed by Jon (jobs + failure notifications). Remaining before M6 accept: observe two more hourly cycles green (`:00` runs at 05:00 and 06:00 UTC) with one new row/location/hour — check with `supabase db query --linked "select date_trunc('hour', recorded_at), count(*) from weather_readings group by 1 order by 1 desc limit 4"` (expect 12 per hour bucket). Note: `recorded_at` is Open-Meteo's observation timestamp (15-min steps), not the request time, so a `:00` run may land in the previous hour's bucket at `:45` — count distinct readings per location, not just bucket alignment. After M6 accept → M7 (Power BI dataset/report/embed).
+- **Previously:** **Phase M5 is COMPLETE** — MeteoLens live at `https://meteolens.jonhammond.org` with 12 real location cards; both accept criteria verified (see M5).
 - **Previously:** **Phase M4 is COMPLETE** — frontend page renders locally. Verified: `GET /` → 200 with all 12 location cards holding real data (e.g. Denver 26°C, "Overcast", 36% humidity, 0.0 mm precip, 91% cloud, 7 km/h wind, 10 km/h gusts, "Observed 2026-08-12 02:30 UTC"); `GET /static/style.css` → 200; `/healthz` → 200 (no regression); zero `None` strings leaked into the HTML; the "report pending" placeholder rendered and **no** `<iframe>` tag was emitted, since `POWERBI_EMBED_URL` is unset locally. Ready to start M5 (Render deploy + DNS).
 - **Environment facts to reuse:**
   - Python 3.11.14 (pyenv). Virtualenv at `.venv/` (gitignored); run things as `.venv/bin/python` / `.venv/bin/gunicorn`.
