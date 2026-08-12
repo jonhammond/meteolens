@@ -1,0 +1,36 @@
+name: Hourly ingest
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Pre-warm (wait out Render cold start)
+        run: |
+          for i in $(seq 1 8); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://meteolens.jonhammond.org/healthz || true)
+            echo "healthz attempt $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "healthz never returned 200" >&2
+          exit 1
+
+      - name: Run ingest
+        env:
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+        run: |
+          curl -sS --fail-with-body --max-time 120 \
+            -X POST https://meteolens.jonhammond.org/api/ingest \
+            -H "Authorization: Bearer ${INGEST_TOKEN}"
