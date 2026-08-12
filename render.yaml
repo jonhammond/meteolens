@@ -1,0 +1,34 @@
+# Render blueprint for MeteoLens.
+#
+# Every secret is `sync: false`: Render prompts for the value in the dashboard
+# and stores it there instead of in this file. Never put real values here —
+# this file is committed to git.
+services:
+  - type: web
+    name: meteolens
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    # app.create_app() validates the environment at import time, so a missing
+    # secret fails the deploy at boot rather than at the first request.
+    startCommand: gunicorn wsgi:app
+    # Also the cron :57 pre-warm target in M6 — free instances sleep when idle.
+    healthCheckPath: /healthz
+    envVars:
+      # Pin the interpreter to the version used in development (3.11.14).
+      - key: PYTHON_VERSION
+        value: "3.11.14"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: POWERBI_PUSH_URL
+        sync: false
+      - key: INGEST_TOKEN
+        sync: false
+      # Optional: unset until M7 publishes the report. While unset the page
+      # renders a "report pending" placeholder instead of an iframe.
+      - key: POWERBI_EMBED_URL
+        sync: false

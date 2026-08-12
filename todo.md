@@ -53,7 +53,7 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M5 — Render deploy + DNS
 
-- [ ] `render.yaml` — python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all secrets `sync: false`
+- [x] `render.yaml` — python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all 5 secrets `sync: false` (no literal values in git), `PYTHON_VERSION=3.11.14` pinned, `branch: main`, free plan, oregon region. Verified: YAML parses; `gunicorn wsgi:app` serves `/healthz` → 200 and `/` → 200; kill test passes for all four required vars (each raises `ConfigError` at boot)
 - [ ] **[USER]** Create Render service from repo; enter the four secrets in the Render dashboard
 - [ ] **[USER]** Add custom domain `meteolens.jonhammond.org`; add the CNAME Render specifies at the jonhammond.org DNS host; wait for auto-TLS
 
