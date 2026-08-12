@@ -260,21 +260,30 @@ def _request(method, url, token, body=None):
     raise CreateDatasetError(f"{method} {url.split('?')[0]} failed: exhausted retries on HTTP 429")
 
 
-def find_existing_dataset(token, name):
+def dataset_root(workspace_id=None):
+    """Base URL for dataset calls: a named workspace, or My workspace when unset.
+
+    Publish to web is unavailable for reports whose dataset sits in a personal
+    workspace, so production datasets must be created with --workspace-id.
+    """
+    return f"{API_ROOT}/groups/{workspace_id}" if workspace_id else API_ROOT
+
+
+def find_existing_dataset(token, name, workspace_id=None):
     """Return the existing dataset dict with this name, or None."""
-    result = _request("GET", f"{API_ROOT}/datasets", token)
+    result = _request("GET", f"{dataset_root(workspace_id)}/datasets", token)
     for dataset in (result or {}).get("value", []):
         if dataset.get("name") == name:
             return dataset
     return None
 
 
-def create_dataset(token):
+def create_dataset(token, workspace_id=None):
     """POST the dataset-creation request; retry once without relationships on a 4xx.
 
     Returns (dataset_response_dict, relationship_created_bool).
     """
-    url = f"{API_ROOT}/datasets?defaultRetentionPolicy=basicFIFO"
+    url = f"{dataset_root(workspace_id)}/datasets?defaultRetentionPolicy=basicFIFO"
     body = build_dataset_schema(include_relationships=True)
 
     try:
@@ -289,9 +298,12 @@ def create_dataset(token):
         return _request("POST", url, token, body_no_rel), False
 
 
-def push_table_rows(token, dataset_id, table_name, rows):
+def push_table_rows(token, dataset_id, table_name, rows, workspace_id=None):
     """POST `rows` to one table of the new dataset. Returns True on success."""
-    url = f"{API_ROOT}/datasets/{dataset_id}/tables/{table_name}/rows"
+    url = (
+        f"{dataset_root(workspace_id)}/datasets/{dataset_id}"
+        f"/tables/{table_name}/rows"
+    )
     _request("POST", url, token, {"rows": rows})
     return True
 
@@ -309,6 +321,15 @@ def parse_args(argv=None):
         action="store_true",
         help="print the dataset schema JSON that would be posted and exit; no token, no network",
     )
+    parser.add_argument(
+        "--workspace-id",
+        default=None,
+        metavar="GUID",
+        help=(
+            "create the dataset in this workspace instead of My workspace; "
+            "required for Publish to web, which personal workspaces do not offer"
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -319,21 +340,24 @@ def main(argv=None):
         print(json.dumps(build_dataset_schema(include_relationships=True), indent=2))
         return 0
 
+    workspace_id = args.workspace_id
+    location = f"workspace {workspace_id}" if workspace_id else "My workspace"
+
     try:
         token = get_access_token()
 
-        existing = find_existing_dataset(token, DATASET_NAME)
+        existing = find_existing_dataset(token, DATASET_NAME, workspace_id)
         if existing is not None:
             print(
-                f"error: a dataset named {DATASET_NAME!r} already exists "
-                f"(id: {existing.get('id')}). Delete it in app.powerbi.com "
-                "first (My workspace -> meteolens-v2 -> Settings -> Remove "
-                "this dataset), then rerun this script.",
+                f"error: a dataset named {DATASET_NAME!r} already exists in "
+                f"{location} (id: {existing.get('id')}). Delete it in "
+                "app.powerbi.com first (dataset -> Settings -> Remove this "
+                "dataset), then rerun this script.",
                 file=sys.stderr,
             )
             return 1
 
-        dataset, relationship_created = create_dataset(token)
+        dataset, relationship_created = create_dataset(token, workspace_id)
         dataset_id = dataset["id"]
         dataset_name = dataset.get("name", DATASET_NAME)
 
@@ -342,13 +366,13 @@ def main(argv=None):
         units_error = None
         cities_error = None
         try:
-            push_table_rows(token, dataset_id, "Units", UNIT_ROWS)
+            push_table_rows(token, dataset_id, "Units", UNIT_ROWS, workspace_id)
         except CreateDatasetError as exc:
             units_ok = False
             units_error = str(exc)
 
         try:
-            push_table_rows(token, dataset_id, "Cities", CITY_ROWS)
+            push_table_rows(token, dataset_id, "Cities", CITY_ROWS, workspace_id)
         except CreateDatasetError as exc:
             cities_ok = False
             cities_error = str(exc)
@@ -360,6 +384,7 @@ def main(argv=None):
     print("dataset created:")
     print(f"  id:   {dataset_id}")
     print(f"  name: {dataset_name}")
+    print(f"  location: {location}")
     print(f"  relationship created: {relationship_created}")
     print(
         f"  Units rows pushed: {'ok' if units_ok else 'FAILED - ' + units_error} "
@@ -370,12 +395,14 @@ def main(argv=None):
         f"({len(CITY_ROWS)} rows)"
     )
     print()
-    print("next step (manual, in the browser):")
+    print("next steps (manual, in the browser):")
     print(
-        "  1. Go to app.powerbi.com -> My workspace"
-        "\n  2. Hover the 'meteolens-v2' dataset -> click 'More options' (...)"
-        "\n  3. Click 'Settings', and look for a 'Push URL' / 'API Info' section"
-        "\n  4. Report back whether a key-based Push URL is shown there"
+        f"  1. Go to app.powerbi.com -> {location}"
+        f"\n  2. Hover the '{dataset_name}' dataset -> 'More options' (...) -> Settings"
+        "\n  3. Copy the key-based Push URL (a SECRET: do not paste it into git,"
+        "\n     todo.md, or a chat transcript) into POWERBI_PUSH_URL on Render"
+        "\n  4. Rebind the report to this dataset and republish it to the same"
+        "\n     workspace, then use File -> Embed report -> Publish to web (public)"
     )
 
     if not units_ok or not cities_ok:
