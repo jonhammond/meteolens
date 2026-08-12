@@ -6,7 +6,7 @@ already-successful Supabase write to "error".
 """
 
 from app import db
-from app.open_meteo import OpenMeteoError, fetch_current
+from app.open_meteo import OpenMeteoError, fetch_current_batch
 from app.powerbi import PowerBIError, push_rows
 from app.weather_codes import describe
 
@@ -36,6 +36,21 @@ CLOUD_COLOR_OVERCAST = "#475569"
 CLOUD_BAND_CLEAR, CLOUD_BAND_PARTLY, CLOUD_BAND_OVERCAST = 0, 1, 2
 
 UNKNOWN_COLOR = "#999999"
+
+# Cap on error text landing in the /api/ingest response summary: the cron
+# caller enforces a response-size ceiling, and 12 verbose error strings can
+# blow past it. Applied to every error string in the summary (per-location
+# and the "powerbi" key) so the response stays small no matter how many
+# locations fail at once.
+ERROR_TEXT_LIMIT = 100
+
+
+def _short(exc, limit=ERROR_TEXT_LIMIT):
+    """Render an exception as a length-capped string for the response summary."""
+    text = str(exc)
+    if len(text) > limit:
+        text = text[:limit] + "..."
+    return text
 
 
 def _precip_enrichment(precip):
@@ -104,17 +119,30 @@ def run_ingest(cfg):
 
     Returns a summary dict: one key per location name ("ok" or
     "error: <reason>"), plus a "powerbi" key describing the batched push
-    outcome. A single location failing never aborts the run.
+    outcome. All locations are fetched from Open-Meteo in a single batched
+    request (one source-IP call instead of N) so a single location failing
+    never aborts the run, but a batch-level fetch failure fails every
+    location at once (there's no per-location response to salvage).
     """
     client = db.build_client(cfg)
     summary = {}
     pbi_rows = []
 
     locations = db.fetch_active_locations(client)
-    for location in locations:
+    coords = [(location["latitude"], location["longitude"]) for location in locations]
+
+    try:
+        readings = fetch_current_batch(coords) if coords else []
+    except OpenMeteoError as exc:
+        error_text = f"error: {_short(exc)}"
+        for location in locations:
+            summary[location["name"]] = error_text
+        summary["powerbi"] = "skipped: no rows"
+        return summary
+
+    for location, reading in zip(locations, readings):
         name = location["name"]
         try:
-            reading = fetch_current(location["latitude"], location["longitude"])
             db.ensure_weather_code(client, reading["weather_code"])
             db.upsert_reading(
                 client,
@@ -133,15 +161,13 @@ def run_ingest(cfg):
             )
             pbi_rows.append(build_pbi_row(name, reading))
             summary[name] = "ok"
-        except OpenMeteoError as exc:
-            summary[name] = f"error: {exc}"
         except Exception as exc:  # noqa: BLE001 - one bad location must not abort the run
-            summary[name] = f"error: {exc}"
+            summary[name] = f"error: {_short(exc)}"
 
     try:
         push_rows(cfg.POWERBI_PUSH_URL, pbi_rows)
         summary["powerbi"] = "ok" if pbi_rows else "skipped: no rows"
     except PowerBIError as exc:
-        summary["powerbi"] = f"error: {exc}"
+        summary["powerbi"] = f"error: {_short(exc)}"
 
     return summary

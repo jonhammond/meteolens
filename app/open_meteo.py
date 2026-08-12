@@ -1,7 +1,8 @@
 """HTTP client for the Open-Meteo `current` forecast block.
 
-Fetches the 8 measurement fields ingest.py needs for one location. Kept
-free of Supabase/Flask concerns so it can be tested in isolation.
+Fetches the 8 measurement fields ingest.py needs, for all locations in one
+batched request. Kept free of Supabase/Flask concerns so it can be tested
+in isolation.
 """
 
 import time
@@ -33,17 +34,34 @@ class OpenMeteoError(RuntimeError):
     """Raised when a forecast fetch ultimately fails (network or non-2xx)."""
 
 
-def fetch_current(latitude, longitude):
-    """Fetch the current-conditions block for one point.
+def _current_to_reading(current):
+    """Convert one `current` block into our reading dict shape."""
+    # timeformat=unixtime + timezone=auto still returns a true UTC epoch;
+    # do NOT add utc_offset_seconds, that would double-apply the offset.
+    recorded_at = datetime.fromtimestamp(current["time"], tz=timezone.utc)
 
-    Returns a dict with the 8 measurement fields plus `recorded_at` (a
-    timezone-aware UTC datetime derived from `current.time`). Retries exactly
-    once on 5xx/connection errors; 4xx responses are not retried since a bad
-    request won't fix itself.
+    result = {field: current.get(field) for field in CURRENT_FIELDS}
+    result["recorded_at"] = recorded_at
+    return result
+
+
+def fetch_current_batch(coords):
+    """Fetch the current-conditions block for every (latitude, longitude) pair.
+
+    Open-Meteo's forecast endpoint accepts comma-separated coordinate lists:
+    with N>1 pairs the top-level response payload is a JSON array of full
+    per-location response objects (each with its own `current` block) in
+    input order; with N=1 it stays a single object. This handles both shapes
+    and always returns a list, in input order.
+
+    Returns a list of dicts, each with the 8 measurement fields plus
+    `recorded_at` (a timezone-aware UTC datetime derived from `current.time`).
+    Retries exactly once on 5xx/connection errors for the whole batch; 4xx
+    responses are not retried since a bad request won't fix itself.
     """
     params = {
-        "latitude": latitude,
-        "longitude": longitude,
+        "latitude": ",".join(str(lat) for lat, _lon in coords),
+        "longitude": ",".join(str(lon) for _lat, lon in coords),
         "current": ",".join(CURRENT_FIELDS),
         "timezone": "auto",
         "timeformat": "unixtime",
@@ -77,16 +95,23 @@ def fetch_current(latitude, longitude):
 
         try:
             payload = resp.json()
-            current = payload["current"]
-        except (ValueError, KeyError) as exc:
+            # N=1 stays a single response object; N>1 comes back as a JSON
+            # array of per-location response objects (same order as the
+            # input lat/lon lists), each with its own "current" block.
+            # Normalize to a list of `current` blocks either way so callers
+            # always get one entry per input coord.
+            if isinstance(payload, list):
+                current_list = [entry["current"] for entry in payload]
+            else:
+                current_list = [payload["current"]]
+        except (ValueError, KeyError, TypeError) as exc:
             raise OpenMeteoError(f"unexpected response shape: {exc}") from exc
 
-        # timeformat=unixtime + timezone=auto still returns a true UTC epoch;
-        # do NOT add utc_offset_seconds, that would double-apply the offset.
-        recorded_at = datetime.fromtimestamp(current["time"], tz=timezone.utc)
+        if len(current_list) != len(coords):
+            raise OpenMeteoError(
+                f"expected {len(coords)} results, got {len(current_list)}"
+            )
 
-        result = {field: current.get(field) for field in CURRENT_FIELDS}
-        result["recorded_at"] = recorded_at
-        return result
+        return [_current_to_reading(entry) for entry in current_list]
 
     raise OpenMeteoError(f"request failed after retry: {last_error}")
