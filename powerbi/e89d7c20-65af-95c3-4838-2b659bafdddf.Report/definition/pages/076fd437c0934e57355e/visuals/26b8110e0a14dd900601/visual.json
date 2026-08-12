@@ -1,16 +1,16 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "e4a920634697d2d70b4b",
+  "name": "26b8110e0a14dd900601",
   "position": {
-    "x": 208,
-    "y": 88,
-    "width": 300,
-    "height": 464,
-    "z": 0,
-    "tabOrder": 0
+    "x": 480,
+    "y": 104,
+    "z": 2000,
+    "height": 376,
+    "width": 400,
+    "tabOrder": 1000
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "lineClusteredColumnComboChart",
     "query": {
       "queryState": {
         "Category": {
@@ -33,7 +33,7 @@
             }
           ]
         },
-        "Y": {
+        "Y2": {
           "projections": [
             {
               "field": {
@@ -45,15 +45,15 @@
                           "Entity": "RealTimeData"
                         }
                       },
-                      "Property": "apparent_temperature"
+                      "Property": "wind_speed_10m"
                     }
                   },
                   "Function": 1
                 }
               },
-              "queryRef": "Sum(RealTimeData.apparent_temperature)",
-              "nativeQueryRef": "Average of apparent_temperature",
-              "displayName": "Feels Like (°C)"
+              "queryRef": "Avg(RealTimeData.wind_speed_10m)",
+              "nativeQueryRef": "Sustained Avg.",
+              "displayName": "Sustained Avg."
             },
             {
               "field": {
@@ -65,15 +65,15 @@
                           "Entity": "RealTimeData"
                         }
                       },
-                      "Property": "temperature_2m"
+                      "Property": "wind_gusts_10m"
                     }
                   },
                   "Function": 1
                 }
               },
-              "queryRef": "Sum(RealTimeData.temperature_2m)",
-              "nativeQueryRef": "Average of temperature_2m",
-              "displayName": "Temperature (°C)"
+              "queryRef": "Avg(RealTimeData.wind_gusts_10m)",
+              "nativeQueryRef": "Gust Avg.",
+              "displayName": "Gust Avg."
             }
           ]
         }
@@ -97,37 +97,28 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true,
-    "visualContainerObjects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Temperature vs. Feels-Like'"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
     "objects": {
       "valueAxis": [
         {
           "properties": {
+            "secShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "secShowAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
             "titleText": {
               "expr": {
                 "Literal": {
-                  "Value": "'°C'"
+                  "Value": "'km/h'"
                 }
               }
             },
@@ -135,6 +126,33 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "secRoundRange": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'TopCenter'"
                 }
               }
             }
@@ -153,13 +171,116 @@
             }
           }
         }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
-    }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Wind Speed'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
       {
-        "name": "37ce010a0349a4d4c965",
+        "name": "81757ad137257dc18093",
+        "displayName": "Sustained Avg.",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "RealTimeData"
+                  }
+                },
+                "Property": "wind_speed_10m"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "532148250880dc78360e",
+        "displayName": "Gust Avg.",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "RealTimeData"
+                  }
+                },
+                "Property": "wind_gusts_10m"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "286cfa0edba1e7c15d27",
         "field": {
           "Column": {
             "Expression": {
@@ -171,44 +292,6 @@
           }
         },
         "type": "Categorical"
-      },
-      {
-        "name": "c61b9ce0e4bc6008ada6",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "temperature_2m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "b36cbd0765d653022451",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "apparent_temperature"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

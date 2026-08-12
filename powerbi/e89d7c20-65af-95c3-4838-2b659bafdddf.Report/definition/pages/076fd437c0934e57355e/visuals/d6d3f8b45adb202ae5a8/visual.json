@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "97e45fee62e5e5ca79b7",
+  "name": "d6d3f8b45adb202ae5a8",
   "position": {
-    "x": 560,
+    "x": 472,
     "y": 568,
-    "width": 336,
+    "z": 6000,
     "height": 120,
-    "z": 4000,
-    "tabOrder": 4000
+    "width": 192,
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -25,15 +25,15 @@
                           "Entity": "RealTimeData"
                         }
                       },
-                      "Property": "temperature_2m"
+                      "Property": "cloud_cover"
                     }
                   },
                   "Function": 1
                 }
               },
-              "queryRef": "Sum(RealTimeData.temperature_2m)",
-              "nativeQueryRef": "Average of temperature_2m",
-              "displayName": "Temperature (°C)"
+              "queryRef": "Sum(RealTimeData.cloud_cover)",
+              "nativeQueryRef": "Average of cloud_cover",
+              "displayName": "Cloud Cover (%)"
             }
           ]
         }
@@ -50,7 +50,7 @@
                         "Entity": "RealTimeData"
                       }
                     },
-                    "Property": "temperature_2m"
+                    "Property": "cloud_cover"
                   }
                 },
                 "Function": 1
@@ -78,7 +78,7 @@
                               "Entity": "RealTimeData"
                             }
                           },
-                          "Property": "temp_color"
+                          "Property": "cloud_color"
                         }
                       },
                       "Function": 3
@@ -96,7 +96,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "2bf1d08e0bd0b0160309",
+        "name": "036786cc23ca60cd82a4",
         "field": {
           "Column": {
             "Expression": {
@@ -196,25 +196,6 @@
           ]
         },
         "howCreated": "User"
-      },
-      {
-        "name": "69938bbc372499739003",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "temperature_2m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }
