@@ -45,8 +45,9 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M4 — Frontend page
 
-- [ ] `app/templates/index.html` — title, server-rendered per-location latest-conditions cards, responsive Power BI `<iframe>` from `POWERBI_EMBED_URL` with "report pending" placeholder until M7
-- [ ] `app/static/style.css` — plain CSS3, no JS build; note "updates hourly" on the page
+- [x] `app/templates/index.html` — title, server-rendered per-location latest-conditions cards, responsive Power BI `<iframe>` from `POWERBI_EMBED_URL` with "report pending" placeholder until M7
+- [x] `app/static/style.css` — plain CSS3, no JS build; note "updates hourly" on the page
+- [x] `GET /` route in `app/routes.py` — builds the client as `api_latest` does, calls `db.fetch_latest_per_location`, attaches a display timestamp via `_format_recorded_at` (`datetime.fromisoformat`, no new dependency)
 
 **Accept:** renders locally with real card data + placeholder iframe.
 
@@ -93,7 +94,7 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** **Phase M3 is COMPLETE** — ingestion endpoint live, all 7 accept criteria verified independently: authed POST → 200 with 12/12 `ok`; rows in Supabase; re-run added 0 dupes; wrong token and absent header both → 401; GET `/api/ingest` → 405; `/api/latest` → 200 with 12 entries; `/healthz` → 200 (no regression). `powerbi` reports an error locally by design (placeholder push URL, real one arrives in M7). Ready to start M4 (frontend page).
+- **Current focus:** **Phase M4 is COMPLETE** — frontend page renders locally. Verified: `GET /` → 200 with all 12 location cards holding real data (e.g. Denver 26°C, "Overcast", 36% humidity, 0.0 mm precip, 91% cloud, 7 km/h wind, 10 km/h gusts, "Observed 2026-08-12 02:30 UTC"); `GET /static/style.css` → 200; `/healthz` → 200 (no regression); zero `None` strings leaked into the HTML; the "report pending" placeholder rendered and **no** `<iframe>` tag was emitted, since `POWERBI_EMBED_URL` is unset locally. Ready to start M5 (Render deploy + DNS).
 - **Environment facts to reuse:**
   - Python 3.11.14 (pyenv). Virtualenv at `.venv/` (gitignored); run things as `.venv/bin/python` / `.venv/bin/gunicorn`.
   - Local dev `.env` exists (gitignored, `chmod 600`) with `SUPABASE_URL=http://127.0.0.1:54331`, the local `SECRET_KEY` from `supabase status`, a generated `INGEST_TOKEN`, and a placeholder `POWERBI_PUSH_URL` (`https://placeholder.invalid/pending-m7`) — swap in the real push URL during M7.
@@ -108,5 +109,7 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
   - Local auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what keeps the two environments equivalent. Keep it in any future table's migration.
   - Migration timestamps are the migration table's primary key: two files created in the same second collided and broke `db reset`. Create them one at a time and check timestamps differ.
   - `supabase db push` may print a non-fatal `pg-delta` catalog-caching error *after* migrations apply; verify with `supabase migration list`, not the exit message.
+  - No `python-dotenv` in `requirements.txt` by design — the app reads the real process environment (Render injects it). For local runs, load the file into the shell first: `set -a && source .env && set +a`, then `.venv/bin/python -m flask --app wsgi:app run --port <port>`.
+  - The `POWERBI_EMBED_URL`-unset branch emits no `<iframe>` at all rather than an iframe with an empty `src`, so there is nothing to clean up in M7 beyond setting the variable.
 - **Blockers:** None.
-- **Next immediate step:** Phase M4 — frontend page: `app/templates/index.html` (title, server-rendered per-location cards fed by `db.fetch_latest_per_location`, responsive Power BI `<iframe>` from `POWERBI_EMBED_URL` with a "report pending" placeholder while it is unset) and `app/static/style.css` (plain CSS3, no JS build; note "updates hourly" on the page). Needs a `GET /` route added to `app/routes.py`.
+- **Next immediate step:** Phase M5 — Render deploy + DNS: write `render.yaml` (python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all four secrets `sync: false`), then the two **[USER]** steps — create the Render service from the repo and enter the secrets, then add the custom domain `meteolens.jonhammond.org` with the CNAME Render specifies at the jonhammond.org DNS host and wait for auto-TLS.

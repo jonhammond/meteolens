@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MeteoLens</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="page-header">
+    <h1>MeteoLens</h1>
+    <p class="tagline">Current conditions across Colorado</p>
+    <p class="updates-note">Readings update hourly.</p>
+  </header>
+
+  <main>
+    <section aria-label="Latest conditions by location">
+      {% if readings %}
+        <div class="card-grid">
+          {% for r in readings %}
+            <article class="card">
+              <h2 class="card-title">{{ r.location }}</h2>
+              <p class="card-desc">{{ r.weather_desc or "—" }}</p>
+
+              <p class="card-temp">
+                {{ "%.0f"|format(r.temperature_2m) ~ "°C" if r.temperature_2m is not none else "—" }}
+              </p>
+              <p class="card-feelslike">
+                Feels like
+                {{ "%.0f"|format(r.apparent_temperature) ~ "°C" if r.apparent_temperature is not none else "—" }}
+              </p>
+
+              <dl class="card-stats">
+                <div>
+                  <dt>Humidity</dt>
+                  <dd>{{ r.relative_humidity_2m ~ "%" if r.relative_humidity_2m is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>Precipitation</dt>
+                  <dd>{{ "%.1f"|format(r.precipitation) ~ " mm" if r.precipitation is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>Cloud cover</dt>
+                  <dd>{{ r.cloud_cover ~ "%" if r.cloud_cover is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>Wind</dt>
+                  <dd>{{ "%.0f"|format(r.wind_speed_10m) ~ " km/h" if r.wind_speed_10m is not none else "—" }}</dd>
+                </div>
+                <div>
+                  <dt>Gusts</dt>
+                  <dd>{{ "%.0f"|format(r.wind_gusts_10m) ~ " km/h" if r.wind_gusts_10m is not none else "—" }}</dd>
+                </div>
+              </dl>
+
+              <p class="card-time">Observed {{ r.recorded_at_display }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-state">No readings yet. Check back after the next hourly ingest.</p>
+      {% endif %}
+    </section>
+
+    <section class="report-section" aria-label="Power BI report">
+      {% if powerbi_embed_url %}
+        <div class="iframe-wrap">
+          <iframe
+            src="{{ powerbi_embed_url }}"
+            title="MeteoLens Power BI report"
+            loading="lazy"
+            allowfullscreen>
+          </iframe>
+        </div>
+      {% else %}
+        <div class="report-pending">
+          <p>Full report coming soon.</p>
+          <p class="report-pending-sub">The embedded Power BI dashboard will appear here once it's published.</p>
+        </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>Data from Open-Meteo. Times shown in UTC.</p>
+  </footer>
+</body>
+</html>
