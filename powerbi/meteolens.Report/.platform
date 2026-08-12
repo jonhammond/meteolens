@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "meteolens"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "8844104f-55bd-854a-4742-d704eff64251"
+  }
+}

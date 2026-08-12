@@ -1,0 +1,77 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "e61c62f03735b7c0a781",
+  "position": {
+    "x": 32,
+    "y": 408,
+    "z": 6000,
+    "height": 176,
+    "width": 136,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData"
+                    }
+                  },
+                  "Property": "weather_desc"
+                }
+              },
+              "queryRef": "RealTimeData.weather_desc",
+              "nativeQueryRef": "weather_desc",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Basic'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "82b9e96a93e08207080a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "RealTimeData"
+              }
+            },
+            "Property": "weather_desc"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

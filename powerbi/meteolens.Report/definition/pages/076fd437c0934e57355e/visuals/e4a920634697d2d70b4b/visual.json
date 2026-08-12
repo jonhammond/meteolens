@@ -1,0 +1,155 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "e4a920634697d2d70b4b",
+  "position": {
+    "x": 192,
+    "y": 40,
+    "z": 0,
+    "height": 440,
+    "width": 336,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData"
+                    }
+                  },
+                  "Property": "recorded_at"
+                }
+              },
+              "queryRef": "RealTimeData.recorded_at",
+              "nativeQueryRef": "recorded_at",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RealTimeData"
+                        }
+                      },
+                      "Property": "apparent_temperature"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Sum(RealTimeData.apparent_temperature)",
+              "nativeQueryRef": "Average of apparent_temperature"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RealTimeData"
+                        }
+                      },
+                      "Property": "temperature_2m"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Sum(RealTimeData.temperature_2m)",
+              "nativeQueryRef": "Average of temperature_2m"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "RealTimeData"
+                  }
+                },
+                "Property": "recorded_at"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "37ce010a0349a4d4c965",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "RealTimeData"
+              }
+            },
+            "Property": "recorded_at"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c61b9ce0e4bc6008ada6",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "RealTimeData"
+                  }
+                },
+                "Property": "temperature_2m"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b36cbd0765d653022451",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "RealTimeData"
+                  }
+                },
+                "Property": "apparent_temperature"
+              }
+            },
+            "Function": 1
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
