@@ -20,8 +20,6 @@ Additional API Configurations:
 - Pass the latitude and longitude dynamically via parameters.
 - Include the "timezone=auto" parameter to align timestamps with local query times.
 
---------------------------------------------------
-
 ## HOW THIS DATA WILL BE USED IN THE POWER BI REPORT
 
 Design the database schema and data types keeping these specific Power BI dashboard visual requirements in mind:
