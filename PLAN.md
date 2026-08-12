@@ -52,7 +52,23 @@ wsgi.py
 ## Milestones (ordered; each independently verifiable)
 
 ### M1 — Supabase schema
-Create free project; run `sql/001–003` in the SQL Editor; seed `weather_codes` from the WMO dict and `locations` with the chosen cities (collect at setup).
+Create free project; run `sql/001–003` in the SQL Editor; seed `weather_codes` from the WMO dict and `locations` with the 12 Colorado cities below (coordinates verified against Open-Meteo's geocoding API; all `America/Denver`).
+
+```sql
+insert into public.locations (name, latitude, longitude) values
+  ('Denver',            39.73915, -104.98470),
+  ('Colorado Springs',  38.83388, -104.82136),
+  ('Pueblo',            38.25445, -104.60914),
+  ('Leadville',         39.25082, -106.29252),
+  ('Fort Collins',      40.58526, -105.08442),
+  ('Durango',           37.27528, -107.88007),
+  ('Grand Junction',    39.06387, -108.55065),
+  ('Glenwood Springs',  39.55054, -107.32478),
+  ('Steamboat Springs', 40.48498, -106.83172),
+  ('Castle Rock',       39.37221, -104.85609),
+  ('Longmont',          40.16721, -105.10193),
+  ('Boulder',           40.01499, -105.27055);
+```
 
 ```sql
 create table public.locations (
@@ -141,7 +157,7 @@ Two jobs: pre-warm GET `/healthz` at `57 * * * *`; ingest POST `/api/ingest` at 
 ## Risks & mitigations
 - **Render cold start (30–60 s)** → :57 pre-warm ping; ingest kept light so the :00 call finishes inside cron-job.org's 30 s timeout. If location count grows: respond 202 and run in a background thread (idempotent upsert makes retries safe).
 - **Publish-to-web ~1 h data cache** → acceptable at hourly cadence; note "updates hourly" on the page.
-- **Push dataset ~200k-row FIFO cap** → Supabase is the system of record; `backfill_powerbi.py` can rebuild the dataset anytime (5 locations ≈ 4.5 years of headroom regardless).
+- **Push dataset ~200k-row FIFO cap** → Supabase is the system of record; `backfill_powerbi.py` can rebuild the dataset anytime (12 locations × 24 rows/day = 288/day ≈ 1.9 years of headroom).
 - **Publish to web disabled by tenant setting** → verify the menu item exists early in M7; a tenant admin may need to enable it.
 - **Supabase 7-day inactivity pause** → hourly inserts keep it active; if cron lapses, resume in dashboard and re-run ingest.
 - **Open-Meteo fair use** → descriptive User-Agent; one retry on 5xx; per-location isolation.
@@ -150,7 +166,7 @@ Two jobs: pre-warm GET `/healthz` at `57 * * * *`; ingest POST `/api/ingest` at 
 ## Free-tier cost check
 | Service | Free allowance | MeteoLens usage |
 |---|---|---|
-| Open-Meteo | ~10k calls/day non-commercial | 24 × locations/day |
+| Open-Meteo | ~10k calls/day non-commercial | 288 calls/day (12 locations × 24) |
 | Supabase | 500 MB DB, 2 projects | < 10 MB/yr |
 | Render | 750 instance-hrs/mo, custom domain + TLS | 1 service ≈ 730 hrs |
 | Power BI free | My Workspace, push datasets, Publish to web | 1 dataset, 1 report |
