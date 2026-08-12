@@ -1,4 +1,5 @@
 .DS_Store
+.pbir/
 .env
 .env.*
 !.env.example

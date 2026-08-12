@@ -3,10 +3,10 @@
   "name": "e61c62f03735b7c0a781",
   "position": {
     "x": 32,
-    "y": 408,
+    "y": 384,
+    "width": 160,
+    "height": 168,
     "z": 6000,
-    "height": 176,
-    "width": 136,
     "tabOrder": 6000
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "RealTimeData.weather_desc",
               "nativeQueryRef": "weather_desc",
-              "active": true
+              "active": true,
+              "displayName": "Conditions"
             }
           ]
         }

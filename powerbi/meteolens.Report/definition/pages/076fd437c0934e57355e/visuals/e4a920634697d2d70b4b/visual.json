@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "e4a920634697d2d70b4b",
   "position": {
-    "x": 192,
-    "y": 40,
+    "x": 208,
+    "y": 88,
+    "width": 300,
+    "height": 464,
     "z": 0,
-    "height": 440,
-    "width": 336,
     "tabOrder": 0
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "RealTimeData.recorded_at",
               "nativeQueryRef": "recorded_at",
-              "active": true
+              "active": true,
+              "displayName": "Time"
             }
           ]
         },
@@ -51,7 +52,8 @@
                 }
               },
               "queryRef": "Sum(RealTimeData.apparent_temperature)",
-              "nativeQueryRef": "Average of apparent_temperature"
+              "nativeQueryRef": "Average of apparent_temperature",
+              "displayName": "Feels Like (°C)"
             },
             {
               "field": {
@@ -70,7 +72,8 @@
                 }
               },
               "queryRef": "Sum(RealTimeData.temperature_2m)",
-              "nativeQueryRef": "Average of temperature_2m"
+              "nativeQueryRef": "Average of temperature_2m",
+              "displayName": "Temperature (°C)"
             }
           ]
         }
@@ -94,7 +97,64 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Temperature vs. Feels-Like'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "valueAxis": [
+        {
+          "properties": {
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'°C'"
+                }
+              }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

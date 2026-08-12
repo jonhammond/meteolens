@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "d6d3f8b45adb202ae5a8",
   "position": {
-    "x": 960,
-    "y": 528,
-    "z": 5000,
+    "x": 912,
+    "y": 568,
+    "width": 336,
     "height": 120,
-    "width": 272,
+    "z": 5000,
     "tabOrder": 5000
   },
   "visual": {
@@ -32,7 +32,8 @@
                 }
               },
               "queryRef": "Sum(RealTimeData.cloud_cover)",
-              "nativeQueryRef": "Average of cloud_cover"
+              "nativeQueryRef": "Average of cloud_cover",
+              "displayName": "Cloud Cover (%)"
             }
           ]
         }

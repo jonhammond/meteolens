@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "afce56a06107b05a316d",
   "position": {
-    "x": 240,
-    "y": 528,
-    "z": 3000,
+    "x": 208,
+    "y": 568,
+    "width": 336,
     "height": 120,
-    "width": 256,
+    "z": 3000,
     "tabOrder": 3000
   },
   "visual": {
@@ -32,7 +32,8 @@
                 }
               },
               "queryRef": "Sum(RealTimeData.precipitation)",
-              "nativeQueryRef": "Average of precipitation"
+              "nativeQueryRef": "Average of precipitation",
+              "displayName": "Precipitation (mm)"
             }
           ]
         }

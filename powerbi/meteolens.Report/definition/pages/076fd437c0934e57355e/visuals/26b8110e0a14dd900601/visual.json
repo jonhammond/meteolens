@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "26b8110e0a14dd900601",
   "position": {
-    "x": 536,
-    "y": 40,
+    "x": 524,
+    "y": 88,
+    "width": 330,
+    "height": 464,
     "z": 1000,
-    "height": 440,
-    "width": 376,
     "tabOrder": 1000
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "RealTimeData.recorded_at",
               "nativeQueryRef": "recorded_at",
-              "active": true
+              "active": true,
+              "displayName": "Time"
             }
           ]
         },
@@ -51,7 +52,8 @@
                 }
               },
               "queryRef": "Avg(RealTimeData.wind_speed_10m)",
-              "nativeQueryRef": "Average of wind_speed_10m"
+              "nativeQueryRef": "Average of wind_speed_10m",
+              "displayName": "Wind Speed (km/h)"
             }
           ]
         },
@@ -74,7 +76,8 @@
                 }
               },
               "queryRef": "Avg(RealTimeData.wind_gusts_10m)",
-              "nativeQueryRef": "Average of wind_gusts_10m"
+              "nativeQueryRef": "Average of wind_gusts_10m",
+              "displayName": "Wind Gusts (km/h)"
             }
           ]
         }
@@ -124,9 +127,44 @@
             }
           }
         }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Wind Speed & Gusts'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
