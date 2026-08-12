@@ -168,6 +168,17 @@ def parse_args(argv=None):
         help=f"max rows per push request (default {DEFAULT_BATCH_SIZE})",
     )
     parser.add_argument(
+        "--only-minute",
+        type=int,
+        help=(
+            "push only readings whose recorded_at minute equals this value. "
+            "Archive-backfilled rows land on :00 while live-pipeline rows carry "
+            "Open-Meteo's 15-minute observation stamps, so --only-minute 0 "
+            "replays just the backfill into a dataset that already holds the "
+            "live rows, without duplicating them (push datasets cannot dedupe)"
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="fetch + enrich only; print row count, time range, and one sample row, never POST",
@@ -194,6 +205,19 @@ def main(argv=None):
     except Exception as exc:  # noqa: BLE001 - surface any fetch failure as a hard error
         print(f"error: failed to fetch from Supabase: {exc}", file=sys.stderr)
         return 1
+
+    if args.only_minute is not None:
+        total_before = len(readings)
+        readings = [
+            reading
+            for reading in readings
+            if _parse_iso8601(reading["recorded_at"], "recorded_at").minute
+            == args.only_minute
+        ]
+        print(
+            f"--only-minute {args.only_minute}: kept {len(readings)} of "
+            f"{total_before} readings"
+        )
 
     if not readings:
         print("0 rows: no readings found in the given window")
