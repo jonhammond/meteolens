@@ -54,10 +54,11 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 ## Phase M5 — Render deploy + DNS
 
 - [x] `render.yaml` — python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all 5 secrets `sync: false` (no literal values in git), `PYTHON_VERSION=3.11.14` pinned, `branch: main`, free plan, oregon region. Verified: YAML parses; `gunicorn wsgi:app` serves `/healthz` → 200 and `/` → 200; kill test passes for all four required vars (each raises `ConfigError` at boot)
-- [ ] **[USER]** Create Render service from repo; enter the four secrets in the Render dashboard
-- [ ] **[USER]** Add custom domain `meteolens.jonhammond.org`; add the CNAME Render specifies at the jonhammond.org DNS host; wait for auto-TLS
+- [x] **[USER]** Create Render service from repo; enter the four secrets in the Render dashboard — confirmed done by Jon; service live at `meteolens.onrender.com` (no random suffix)
+- [x] **[USER]** Add custom domain `meteolens.jonhammond.org`; add the CNAME Render specifies at the jonhammond.org DNS host; wait for auto-TLS — confirmed done by Jon; CNAME → `meteolens.onrender.com`, cert issued by Google Trust Services (`CN=meteolens.jonhammond.org`, valid to 2026-11-10)
+- [x] First production ingest run — 12/12 locations `ok`; cloud DB went 0 → 12 readings across 12 distinct locations (newest `2026-08-12 04:15:00+00`)
 
-**Accept:** `https://meteolens.jonhammond.org/healthz` → 200 with valid cert; authed ingest curl against prod writes rows.
+**Accept:** `https://meteolens.jonhammond.org/healthz` → 200 with valid cert; authed ingest curl against prod writes rows. **VERIFIED** — `/healthz` → 200 in 0.2s (`x-render-origin-server: gunicorn`); `/` → 200 with 12 real cards, no empty state, zero `None` leaks; `/api/latest` → 12 entries; `GET /api/ingest` → 405; POST with absent/wrong token → 401; cloud `UNIQUE (location_id, recorded_at)` present with 0 duplicate pairs.
 
 ## Phase M6 — cron-job.org wiring
 
@@ -94,7 +95,8 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** **Phase M4 is COMPLETE** — frontend page renders locally. Verified: `GET /` → 200 with all 12 location cards holding real data (e.g. Denver 26°C, "Overcast", 36% humidity, 0.0 mm precip, 91% cloud, 7 km/h wind, 10 km/h gusts, "Observed 2026-08-12 02:30 UTC"); `GET /static/style.css` → 200; `/healthz` → 200 (no regression); zero `None` strings leaked into the HTML; the "report pending" placeholder rendered and **no** `<iframe>` tag was emitted, since `POWERBI_EMBED_URL` is unset locally. Ready to start M5 (Render deploy + DNS).
+- **Current focus:** **Phase M5 is COMPLETE** — MeteoLens is live in production at `https://meteolens.jonhammond.org` with 12 real location cards. Both accept criteria verified independently (see M5 above). Ready to start M6 (cron-job.org wiring) — all three M6 items are **[USER]** steps.
+- **Previously:** **Phase M4 is COMPLETE** — frontend page renders locally. Verified: `GET /` → 200 with all 12 location cards holding real data (e.g. Denver 26°C, "Overcast", 36% humidity, 0.0 mm precip, 91% cloud, 7 km/h wind, 10 km/h gusts, "Observed 2026-08-12 02:30 UTC"); `GET /static/style.css` → 200; `/healthz` → 200 (no regression); zero `None` strings leaked into the HTML; the "report pending" placeholder rendered and **no** `<iframe>` tag was emitted, since `POWERBI_EMBED_URL` is unset locally. Ready to start M5 (Render deploy + DNS).
 - **Environment facts to reuse:**
   - Python 3.11.14 (pyenv). Virtualenv at `.venv/` (gitignored); run things as `.venv/bin/python` / `.venv/bin/gunicorn`.
   - Local dev `.env` exists (gitignored, `chmod 600`) with `SUPABASE_URL=http://127.0.0.1:54331`, the local `SECRET_KEY` from `supabase status`, a generated `INGEST_TOKEN`, and a placeholder `POWERBI_PUSH_URL` (`https://placeholder.invalid/pending-m7`) — swap in the real push URL during M7.
@@ -111,5 +113,10 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
   - `supabase db push` may print a non-fatal `pg-delta` catalog-caching error *after* migrations apply; verify with `supabase migration list`, not the exit message.
   - No `python-dotenv` in `requirements.txt` by design — the app reads the real process environment (Render injects it). For local runs, load the file into the shell first: `set -a && source .env && set +a`, then `.venv/bin/python -m flask --app wsgi:app run --port <port>`.
   - The `POWERBI_EMBED_URL`-unset branch emits no `<iframe>` at all rather than an iframe with an empty `src`, so there is nothing to clean up in M7 beyond setting the variable.
+  - Prod service: `meteolens.onrender.com`, **free plan** → sleeps after ~15 min idle; first request after sleep takes ~50 s. That is exactly what M6's `:57` pre-warm job exists to prevent.
+  - Render deploys from **`main`**, not `dev`. Work on `dev`, then merge to `main` to ship. `render.yaml` pins `branch: main`.
+  - A 401 from prod ingest means Render's `INGEST_TOKEN` differs from the local one — `hmac.compare_digest` is an exact match and reveals nothing about how wrong the token is (a garbage token and a near-miss return byte-identical responses). Distinguish from a sleeping instance by the response shape: sleep gives a slow reply or a Render-edge 502/503, whereas a real 401 carries `x-render-origin-server: gunicorn` and a JSON body from our own code.
+  - `supabase db execute` does not exist — the subcommand is **`supabase db query --linked "<sql>"`** for cloud queries.
+  - `app/__pycache__/weather_codes.cpython-311.pyc` is tracked on `main` (committed before `.gitignore` covered `__pycache__/`). Harmless, but `git rm --cached` it when convenient — `.gitignore` cannot untrack an already-tracked file.
 - **Blockers:** None.
-- **Next immediate step:** Phase M5 — Render deploy + DNS: write `render.yaml` (python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all four secrets `sync: false`), then the two **[USER]** steps — create the Render service from the repo and enter the secrets, then add the custom domain `meteolens.jonhammond.org` with the CNAME Render specifies at the jonhammond.org DNS host and wait for auto-TLS.
+- **Next immediate step:** Phase M6 — cron-job.org wiring: write `render.yaml` (python web service, `startCommand: gunicorn wsgi:app`, `healthCheckPath: /healthz`, all four secrets `sync: false`), then the two **[USER]** steps — create the Render service from the repo and enter the secrets, then add the custom domain `meteolens.jonhammond.org` with the CNAME Render specifies at the jonhammond.org DNS host and wait for auto-TLS.
