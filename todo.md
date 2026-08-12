@@ -93,10 +93,12 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** Phase M1 — local half is **complete and verified**. Workflow changed 2026-08-11 to local-first (Supabase CLI + Docker); PLAN.md amended accordingly (`sql/001–003` replaced by `supabase/migrations/`). Three migrations written and passing all local accept tests. Remaining M1 work is promoting them to the cloud project.
-- **Notes from this session:**
-  - Local ports shifted +10 (54331+) in `supabase/config.toml`; another local project (`its_the_loop`) holds the default 54321+ range, and both now run side by side.
-  - Local stack auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what makes the two environments match.
-  - Two migrations initially shared a timestamp (`db reset` failed on the migration table's primary key); the seed migration was renamed to `20260812020517`. Create migrations one at a time, or verify timestamps differ.
-- **Blockers:** Cloud push needs `supabase login` — interactive browser auth that only Jon can complete.
-- **Next immediate step:** Jon runs `! supabase login` and shares the project ref; then `supabase link --project-ref <ref>` + `supabase db push` (confirm first — it mutates the cloud DB), followed by the cloud accept tests.
+- **Current focus:** **Phase M1 is COMPLETE** — schema verified locally and in the cloud, both accept criteria met. Workflow changed 2026-08-11 to local-first (Supabase CLI + Docker); PLAN.md amended accordingly (`sql/001–003` replaced by `supabase/migrations/`). Ready to start M2 (Flask skeleton).
+- **Environment facts to reuse:**
+  - Cloud project ref `yddbzlmdaqrpzuumeodg` (us-east-2), linked. Promote schema changes with a new migration + `supabase db push` — never hand-edit in the cloud SQL Editor.
+  - Local stack runs on **54331+** (ports shifted +10 in `supabase/config.toml`) because another local project (`its_the_loop`) holds the default 54321+ range. Local API `http://127.0.0.1:54331`, Studio `http://127.0.0.1:54333`; keys come from `supabase status`.
+  - Local auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what keeps the two environments equivalent. Keep it in any future table's migration.
+  - Migration timestamps are the migration table's primary key: two files created in the same second collided and broke `db reset`. Create them one at a time and check timestamps differ.
+  - `supabase db push` may print a non-fatal `pg-delta` catalog-caching error *after* migrations apply; verify with `supabase migration list`, not the exit message.
+- **Blockers:** None.
+- **Next immediate step:** Phase M2 — scaffold the Flask skeleton (`app/config.py` fail-fast env validation, `create_app()`, `/healthz`, `wsgi.py`, `requirements.txt`, `.env.example`) pointed at the local stack for development.
