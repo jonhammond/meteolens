@@ -33,13 +33,13 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M3 — Ingestion endpoint (dual write)
 
-- [ ] `app/open_meteo.py` — HTTP client for the `current` block (fields per API_PLAN.md), `timezone=auto`, `timeformat=unixtime`, descriptive User-Agent, one retry on 5xx
-- [ ] `app/db.py` — supabase-py client wrapper (REST over HTTPS; Render is IPv4-only)
-- [ ] `app/powerbi.py` — batched POST to push URL (≤1 req/sec, ≤10k rows; all locations in one POST)
-- [ ] `app/ingest.py` — per-location orchestration: fetch → Supabase upsert `on conflict (location_id, recorded_at)` → PBI push; per-location try/except so one failure never aborts the run; unseen WMO code inserted as `Unknown (N)` before the reading
-- [ ] PBI row enrichment computed server-side in Python: `location`, `weather_desc`, `precip_color`/`temp_color`/`cloud_color` hex strings, `precip_flag`/`temp_band`/`cloud_band` numeric helpers
-- [ ] `POST /api/ingest` — `Authorization: Bearer <INGEST_TOKEN>` with constant-time compare; 401 on bad token; 405 on GET; returns per-location `{location: ok|error}` summary
-- [ ] `GET /api/latest` — newest reading per active location (for frontend cards)
+- [x] `app/open_meteo.py` — HTTP client for the `current` block (fields per API_PLAN.md), `timezone=auto`, `timeformat=unixtime`, descriptive User-Agent, one retry on 5xx/connection error (4xx not retried); `OpenMeteoError` on failure
+- [x] `app/db.py` — supabase-py client wrapper (REST over HTTPS; Render is IPv4-only): `build_client`, `fetch_active_locations`, `ensure_weather_code`, `upsert_reading`, `fetch_latest_per_location`
+- [x] `app/powerbi.py` — batched POST to push URL (≤1 req/sec, ≤10k rows; all locations in one POST); `PowerBIError` on non-2xx
+- [x] `app/ingest.py` — per-location orchestration: fetch → Supabase upsert `on conflict (location_id, recorded_at)` → PBI push; per-location try/except so one failure never aborts the run; unseen WMO code inserted as `Unknown (N)` before the reading
+- [x] PBI row enrichment computed server-side in Python: `location`, `weather_desc`, `precip_color`/`temp_color`/`cloud_color` hex strings, `precip_flag`/`temp_band`/`cloud_band` numeric helpers — thresholds are named module constants in `ingest.py`
+- [x] `POST /api/ingest` — `Authorization: Bearer <INGEST_TOKEN>` with `hmac.compare_digest`; 401 on bad/absent token; 405 on GET (Flask automatic); returns per-location `{location: ok|error}` summary plus a separate `powerbi` key
+- [x] `GET /api/latest` — newest reading per active location (for frontend cards), joined to name + `weather_desc`
 
 **Accept:** authed curl → summary JSON; rows in Supabase; re-run adds no dupes; wrong token → 401; GET → 405.
 
@@ -93,16 +93,20 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** **Phase M2 is COMPLETE** — Flask skeleton scaffolded, both accept criteria verified (gunicorn serves `/healthz` → 200 with env populated; blanking `INGEST_TOKEN` makes it exit 3 with `ConfigError: Missing required environment variable(s): INGEST_TOKEN`). Ready to start M3 (ingestion endpoint).
+- **Current focus:** **Phase M3 is COMPLETE** — ingestion endpoint live, all 7 accept criteria verified independently: authed POST → 200 with 12/12 `ok`; rows in Supabase; re-run added 0 dupes; wrong token and absent header both → 401; GET `/api/ingest` → 405; `/api/latest` → 200 with 12 entries; `/healthz` → 200 (no regression). `powerbi` reports an error locally by design (placeholder push URL, real one arrives in M7). Ready to start M4 (frontend page).
 - **Environment facts to reuse:**
   - Python 3.11.14 (pyenv). Virtualenv at `.venv/` (gitignored); run things as `.venv/bin/python` / `.venv/bin/gunicorn`.
   - Local dev `.env` exists (gitignored, `chmod 600`) with `SUPABASE_URL=http://127.0.0.1:54331`, the local `SECRET_KEY` from `supabase status`, a generated `INGEST_TOKEN`, and a placeholder `POWERBI_PUSH_URL` (`https://placeholder.invalid/pending-m7`) — swap in the real push URL during M7.
   - PLAN.md M2 text says local Supabase is on `54321`; the actual local port is **54331** (the documented +10 shift). Trust 54331.
   - `supabase==2.22.0` is **yanked** on PyPI (unpinned transitive deps); pinned `2.31.0` instead.
+  - supabase-py 2.31.0 API confirmed by inspection: `create_client(url, key)`; sync chain `.table().select().eq().order().limit().in_().execute()`; `.upsert(json, on_conflict=..., ignore_duplicates=...)`.
+  - Open-Meteo with `timeformat=unixtime` **and** `timezone=auto` returns a true UTC epoch — use `datetime.fromtimestamp(t, tz=timezone.utc)` and do **not** add `utc_offset_seconds`. Double-applying it would shift `recorded_at` and silently break the `(location_id, recorded_at)` upsert key, turning every re-run into duplicate rows.
+  - Local ingest always reports `powerbi: error` (DNS failure on `placeholder.invalid`). That is expected until M7 and is deliberately kept separate from the per-location results — Supabase is the system of record, so a push failure must never mark a successful DB write as failed.
+  - PostgREST has no lateral-join primitive, so `fetch_latest_per_location` pulls readings newest-first and reduces per `location_id` in Python. Fine at 12 locations/hourly; revisit if the location count grows a lot.
   - Cloud project ref `yddbzlmdaqrpzuumeodg` (us-east-2), linked. Promote schema changes with a new migration + `supabase db push` — never hand-edit in the cloud SQL Editor.
   - Local stack runs on **54331+** (ports shifted +10 in `supabase/config.toml`) because another local project (`its_the_loop`) holds the default 54321+ range. Local API `http://127.0.0.1:54331`, Studio `http://127.0.0.1:54333`; keys come from `supabase status`.
   - Local auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what keeps the two environments equivalent. Keep it in any future table's migration.
   - Migration timestamps are the migration table's primary key: two files created in the same second collided and broke `db reset`. Create them one at a time and check timestamps differ.
   - `supabase db push` may print a non-fatal `pg-delta` catalog-caching error *after* migrations apply; verify with `supabase migration list`, not the exit message.
 - **Blockers:** None.
-- **Next immediate step:** Phase M3 — ingestion endpoint: `app/open_meteo.py` (current block, `timezone=auto`, `timeformat=unixtime`), `app/db.py` (supabase-py REST wrapper), `app/powerbi.py` (batched push), `app/ingest.py` (per-location fetch → upsert → push with per-location try/except), then `POST /api/ingest` (Bearer + constant-time compare) and `GET /api/latest`.
+- **Next immediate step:** Phase M4 — frontend page: `app/templates/index.html` (title, server-rendered per-location cards fed by `db.fetch_latest_per_location`, responsive Power BI `<iframe>` from `POWERBI_EMBED_URL` with a "report pending" placeholder while it is unset) and `app/static/style.css` (plain CSS3, no JS build; note "updates hourly" on the page). Needs a `GET /` route added to `app/routes.py`.
