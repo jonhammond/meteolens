@@ -1,5 +1,14 @@
 {
-  "name": "unit_toggle",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "city_slicer",
+  "position": {
+    "x": 32,
+    "y": 96,
+    "z": 0,
+    "height": 280,
+    "width": 216,
+    "tabOrder": 2
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
@@ -7,18 +16,19 @@
         "Values": {
           "projections": [
             {
-              "queryRef": "Units.unit",
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Units"
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "unit"
+                  "Property": "location"
                 }
               },
-              "nativeQueryRef": "unit"
+              "queryRef": "RealTimeData.location",
+              "nativeQueryRef": "location",
+              "active": true
             }
           ]
         }
@@ -31,7 +41,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Basic'"
+                  "Value": "'VerticalList'"
                 }
               }
             }
@@ -41,7 +51,14 @@
       "selection": [
         {
           "properties": {
-            "strictSingleSelect": {
+            "singleSelect": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "selectAllCheckboxEnabled": {
               "expr": {
                 "Literal": {
                   "Value": "true"
@@ -54,30 +71,37 @@
       "header": [
         {
           "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cities'"
+                }
+              }
+            },
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             }
           }
         }
       ],
-      "general": [
+      "items": [
         {
           "properties": {
-            "orientation": {
+            "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "1D"
+                  "Value": "10D"
                 }
               }
             },
-            "responsive": {
+            "padding": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "2D"
                 }
               }
             }
@@ -86,17 +110,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "position": {
-    "x": 968,
-    "y": 24,
-    "width": 280,
-    "height": 56,
-    "z": 0,
-    "tabOrder": 1
-  },
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "filterConfig": {
-    "filters": []
   }
 }

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "b51584520aee6f58",
+  "name": "93ac393f92891a02",
   "position": {
-    "x": 1064,
+    "x": 464,
     "y": 568,
-    "width": 184,
+    "z": 5000,
     "height": 120,
-    "z": 8000,
-    "tabOrder": 11
+    "width": 184,
+    "tabOrder": 8
   },
   "visual": {
     "visualType": "cardVisual",
@@ -20,15 +20,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "AQI Latest"
+                  "Property": "Temp Latest"
                 }
               },
-              "queryRef": "RealTimeData.AQI Latest",
-              "nativeQueryRef": "AQI Latest"
+              "queryRef": "RealTimeData.Temp Latest",
+              "nativeQueryRef": "Temp Latest"
             }
           ]
         }
@@ -71,7 +71,7 @@
                           "Entity": "RealTimeData"
                         }
                       },
-                      "Property": "AQI Color"
+                      "Property": "Temp Color"
                     }
                   }
                 }
@@ -98,7 +98,7 @@
                       "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "AQI Title"
+                  "Property": "Temp Title"
                 }
               }
             },
@@ -121,8 +121,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": []
   }
 }

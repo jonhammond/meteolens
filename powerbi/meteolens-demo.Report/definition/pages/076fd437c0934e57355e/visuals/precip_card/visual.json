@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "a1ee2c9cf8038e99",
+  "name": "c31e0e6d09e0c77d",
   "position": {
-    "x": 864,
+    "x": 264,
     "y": 568,
-    "width": 184,
+    "z": 4000,
     "height": 120,
-    "z": 6000,
-    "tabOrder": 10
+    "width": 184,
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "cardVisual",
@@ -20,15 +20,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "Wind Latest"
+                  "Property": "Precip Latest"
                 }
               },
-              "queryRef": "RealTimeData.Wind Latest",
-              "nativeQueryRef": "Wind Latest"
+              "queryRef": "RealTimeData.Precip Latest",
+              "nativeQueryRef": "Precip Latest"
             }
           ]
         }
@@ -58,6 +58,28 @@
       }
     },
     "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RealTimeData"
+                        }
+                      },
+                      "Property": "Precip Color"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
       "title": [
         {
           "properties": {
@@ -73,11 +95,10 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "Wind Title"
+                  "Property": "Precip Title"
                 }
               }
             },
@@ -100,8 +121,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": []
   }
 }

@@ -1,5 +1,14 @@
 {
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "date_slider",
+  "position": {
+    "x": 264,
+    "y": 96,
+    "z": 0,
+    "height": 72,
+    "width": 984,
+    "tabOrder": 3
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
@@ -7,7 +16,6 @@
         "Values": {
           "projections": [
             {
-              "queryRef": "RealTimeData.recorded_at",
               "field": {
                 "Column": {
                   "Expression": {
@@ -18,7 +26,9 @@
                   "Property": "recorded_at"
                 }
               },
-              "nativeQueryRef": "recorded_at"
+              "queryRef": "RealTimeData.recorded_at",
+              "nativeQueryRef": "recorded_at",
+              "active": true
             }
           ]
         }
@@ -61,15 +71,6 @@
     },
     "drillFilterOtherVisuals": true
   },
-  "position": {
-    "x": 264,
-    "y": 96,
-    "width": 984,
-    "height": 72,
-    "z": 0,
-    "tabOrder": 3
-  },
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "filterConfig": {
     "filters": [
       {
@@ -85,7 +86,6 @@
           }
         },
         "type": "RelativeDate",
-        "howCreated": "User",
         "filter": {
           "Version": 2,
           "From": [
@@ -111,11 +111,11 @@
                   },
                   "LowerBound": {
                     "DateAdd": {
-                      "Amount": -30,
-                      "TimeUnit": 0,
                       "Expression": {
                         "Now": {}
-                      }
+                      },
+                      "Amount": -30,
+                      "TimeUnit": 0
                     }
                   },
                   "UpperBound": {
@@ -125,7 +125,8 @@
               }
             }
           ]
-        }
+        },
+        "howCreated": "User"
       }
     ]
   }

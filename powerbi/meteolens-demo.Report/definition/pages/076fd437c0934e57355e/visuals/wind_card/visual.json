@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "d6d3f8b45adb202ae5a8",
+  "name": "a1ee2c9cf8038e99",
   "position": {
-    "x": 664,
+    "x": 864,
     "y": 568,
-    "width": 184,
-    "height": 120,
     "z": 6000,
-    "tabOrder": 9
+    "height": 120,
+    "width": 184,
+    "tabOrder": 10
   },
   "visual": {
     "visualType": "cardVisual",
@@ -20,15 +20,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "Cloud Latest"
+                  "Property": "Wind Latest"
                 }
               },
-              "queryRef": "RealTimeData.Cloud Latest",
-              "nativeQueryRef": "Cloud Latest"
+              "queryRef": "RealTimeData.Wind Latest",
+              "nativeQueryRef": "Wind Latest"
             }
           ]
         }
@@ -58,29 +58,6 @@
       }
     },
     "visualContainerObjects": {
-      "background": [
-        {
-          "properties": {
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData",
-                          "Schema": "extension"
-                        }
-                      },
-                      "Property": "Cloud Color"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ],
       "title": [
         {
           "properties": {
@@ -96,11 +73,11 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "Cloud Title"
+                  "Property": "Wind Title"
                 }
               }
             },
@@ -123,8 +100,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": []
   }
 }
