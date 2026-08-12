@@ -22,12 +22,12 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M2 — Flask skeleton
 
-- [ ] Scaffold repo layout per PLAN.md (`app/`, `sql/`, `scripts/`, `wsgi.py`, `requirements.txt`, `render.yaml`, `.env.example`)
-- [ ] `app/config.py` — required env vars `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `POWERBI_PUSH_URL`, `INGEST_TOKEN`; optional `POWERBI_EMBED_URL`; no hardcoded fallbacks (project security rule)
-- [ ] `app/__init__.py` — `create_app()` with fail-fast env validation at startup
-- [ ] `app/routes.py` — `/healthz` → 200
-- [ ] `wsgi.py` exposes `app`; `requirements.txt` — flask, gunicorn, supabase, requests
-- [ ] `.env.example` — variable names only; confirm `.env` is gitignored
+- [x] Scaffold repo layout per PLAN.md (`app/`, `wsgi.py`, `requirements.txt`, `.env.example`) — `scripts/` deferred to M7 (backfill), `render.yaml` to M5; `sql/` obsolete (replaced by `supabase/migrations/` in M1)
+- [x] `app/config.py` — required env vars `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `POWERBI_PUSH_URL`, `INGEST_TOKEN`; optional `POWERBI_EMBED_URL`; no hardcoded fallbacks (project security rule); blank/whitespace values treated as missing
+- [x] `app/__init__.py` — `create_app()` with fail-fast env validation at startup (raises `ConfigError`); config stored at `app.config["METEOLENS"]`
+- [x] `app/routes.py` — `/healthz` → 200 `{"status":"ok"}` (blueprint `main`)
+- [x] `wsgi.py` exposes `app`; `requirements.txt` — flask 3.1.2, gunicorn 23.0.0, supabase 2.31.0, requests 2.32.5
+- [x] `.env.example` — variable names only; `.gitignore` extended with `.env`, `__pycache__/`, `.venv/`; `git check-ignore` confirms `.env` ignored
 
 **Accept:** `gunicorn wsgi:app` runs locally with env populated; refuses to start with one var unset; `curl /healthz` → 200.
 
@@ -93,12 +93,16 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** **Phase M1 is COMPLETE** — schema verified locally and in the cloud, both accept criteria met. Workflow changed 2026-08-11 to local-first (Supabase CLI + Docker); PLAN.md amended accordingly (`sql/001–003` replaced by `supabase/migrations/`). Ready to start M2 (Flask skeleton).
+- **Current focus:** **Phase M2 is COMPLETE** — Flask skeleton scaffolded, both accept criteria verified (gunicorn serves `/healthz` → 200 with env populated; blanking `INGEST_TOKEN` makes it exit 3 with `ConfigError: Missing required environment variable(s): INGEST_TOKEN`). Ready to start M3 (ingestion endpoint).
 - **Environment facts to reuse:**
+  - Python 3.11.14 (pyenv). Virtualenv at `.venv/` (gitignored); run things as `.venv/bin/python` / `.venv/bin/gunicorn`.
+  - Local dev `.env` exists (gitignored, `chmod 600`) with `SUPABASE_URL=http://127.0.0.1:54331`, the local `SECRET_KEY` from `supabase status`, a generated `INGEST_TOKEN`, and a placeholder `POWERBI_PUSH_URL` (`https://placeholder.invalid/pending-m7`) — swap in the real push URL during M7.
+  - PLAN.md M2 text says local Supabase is on `54321`; the actual local port is **54331** (the documented +10 shift). Trust 54331.
+  - `supabase==2.22.0` is **yanked** on PyPI (unpinned transitive deps); pinned `2.31.0` instead.
   - Cloud project ref `yddbzlmdaqrpzuumeodg` (us-east-2), linked. Promote schema changes with a new migration + `supabase db push` — never hand-edit in the cloud SQL Editor.
   - Local stack runs on **54331+** (ports shifted +10 in `supabase/config.toml`) because another local project (`its_the_loop`) holds the default 54321+ range. Local API `http://127.0.0.1:54331`, Studio `http://127.0.0.1:54333`; keys come from `supabase status`.
   - Local auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what keeps the two environments equivalent. Keep it in any future table's migration.
   - Migration timestamps are the migration table's primary key: two files created in the same second collided and broke `db reset`. Create them one at a time and check timestamps differ.
   - `supabase db push` may print a non-fatal `pg-delta` catalog-caching error *after* migrations apply; verify with `supabase migration list`, not the exit message.
 - **Blockers:** None.
-- **Next immediate step:** Phase M2 — scaffold the Flask skeleton (`app/config.py` fail-fast env validation, `create_app()`, `/healthz`, `wsgi.py`, `requirements.txt`, `.env.example`) pointed at the local stack for development.
+- **Next immediate step:** Phase M3 — ingestion endpoint: `app/open_meteo.py` (current block, `timezone=auto`, `timeformat=unixtime`), `app/db.py` (supabase-py REST wrapper), `app/powerbi.py` (batched push), `app/ingest.py` (per-location fetch → upsert → push with per-location try/except), then `POST /api/ingest` (Bearer + constant-time compare) and `GET /api/latest`.

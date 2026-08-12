@@ -140,7 +140,7 @@ Notes: seed the full Open-Meteo WMO code set (~28 codes); on an unseen code, ins
 **Accept (cloud)**: `supabase migration list` shows all three applied remotely; tables visible in the dashboard; publishable-key select fails with permission denied; seeds present.
 
 ### M2 — Flask skeleton
-Scaffold layout; `create_app()` raises at startup if any required env var is missing (no hardcoded fallbacks — project rule); `/healthz` → 200; `wsgi.py` exposes `app`. Local dev points `SUPABASE_URL` at the local stack (`http://127.0.0.1:54321`) with keys from `supabase status`; the cloud URL + secret key are used only on Render.
+Scaffold layout; `create_app()` raises at startup if any required env var is missing (no hardcoded fallbacks — project rule); `/healthz` → 200; `wsgi.py` exposes `app`. Local dev points `SUPABASE_URL` at the local stack (`http://127.0.0.1:54331` — this project's ports are shifted +10 off the 54321 defaults) with keys from `supabase status`; the cloud URL + secret key are used only on Render.
 **Accept**: `gunicorn wsgi:app` runs locally with env populated; refuses to start with one unset; `curl /healthz` → 200.
 
 ### M3 — Ingestion endpoint (dual write)
