@@ -2,17 +2,23 @@
 
 Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLAN.md milestone; the **Accept** line under each phase is that milestone's exit criterion. Items tagged **[USER]** require actions in an external dashboard/account that only Jon can perform (Supabase, Render, DNS, Power BI, cron-job.org).
 
-## Phase M1 — Supabase schema
+## Phase M1 — Supabase schema (local-first, then pushed)
 
-- [ ] **[USER]** Create free Supabase project with **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**; note project URL and a secret (`sb_secret_...`) key
-- [ ] Write `app/weather_codes.py` — full WMO code → description dict (~28 codes, single source of truth) with a helper that emits the SQL seed
-- [ ] Write `sql/001_schema.sql` — `locations`, `weather_codes`, `weather_readings` tables, `unique (location_id, recorded_at)`, `weather_readings_loc_time_idx`
-- [ ] Write `sql/002_rls.sql` — enable RLS on all three tables, no anon policies (deny-by-default), least-privilege `service_role` grants per PLAN.md (auto-expose is OFF; no deletes anywhere)
-- [ ] Write `sql/003_seed.sql` — WMO codes (generated from `weather_codes.py`) + the 12 Colorado cities with verified coordinates
-- [ ] **[USER]** Run `sql/001–003` in the Supabase SQL Editor
-- [ ] Verify accept criteria: tables visible in dashboard; publishable/anon-key select → permission denied; secret-key select works; seeds present
+- [x] **[USER]** Create free Supabase project with **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**; note project URL and a secret (`sb_secret_...`) key
+- [x] `supabase init` — create `supabase/config.toml`
+- [x] `supabase start` — bring up the local Docker stack (ports shifted +10 to 54331+ to coexist with another local project on the defaults)
+- [x] Write `app/weather_codes.py` — full WMO code → description dict (28 codes, single source of truth), `describe()` with `Unknown (N)` fallback, `sql_seed()` generator runnable as `python3 -m app.weather_codes`
+- [x] `supabase migration new create_schema` — `locations`, `weather_codes`, `weather_readings` tables, `unique (location_id, recorded_at)`, `weather_readings_loc_time_idx`
+- [x] `supabase migration new rls_and_grants` — enable RLS on all three tables, no anon policies (deny-by-default), explicit `revoke all ... from anon, authenticated` (makes local match the cloud's auto-expose-OFF), least-privilege `service_role` grants (no deletes anywhere)
+- [x] `supabase migration new seed_reference_data` — idempotent inserts: WMO codes (generated from `weather_codes.py`) + the 12 Colorado cities with verified coordinates
+- [x] `supabase db reset` — replayed cleanly twice; counts stable at 28 codes / 12 locations (seeds are idempotent)
+- [x] Local accept tests: 3 tables with RLS enabled, 28 codes, 12 locations, grants correct (anon/authenticated absent entirely); anon-key REST select → `42501` permission denied; secret-key REST select → rows
+- [ ] **[USER]** `supabase login` (interactive browser auth), then share the project ref
+- [ ] `supabase link --project-ref <ref>` then `supabase db push` (mutates the cloud DB — confirm before running)
+- [ ] Cloud accept tests: `supabase migration list` shows all three applied remotely; tables in dashboard; publishable-key select → permission denied; seeds present
 
-**Accept:** tables in dashboard; publishable/anon-key select fails with permission denied; secret-key select works; seeds present.
+**Accept (local):** `db reset` replays cleanly twice; anon-key select → permission denied; service-key select → rows; seeds present.
+**Accept (cloud):** all three migrations applied remotely; tables in dashboard; publishable-key select → permission denied; seeds present.
 
 ## Phase M2 — Flask skeleton
 
@@ -87,6 +93,10 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** Project bootstrap. Jon is creating the Supabase project. Decision made 2026-08-11: Data API ON, automatic RLS ON, auto-expose new tables OFF — PLAN.md M1 amended with explicit least-privilege `service_role` grants and permission-denied (not zero-rows) accept criteria. `SUPABASE_SERVICE_ROLE_KEY` will hold a new-style `sb_secret_...` key.
-- **Blockers:** None. (M1 SQL can be written before the Supabase project exists.)
-- **Next immediate step:** Phase M1 — write `app/weather_codes.py` (WMO dict) and generate `sql/001_schema.sql`, `sql/002_rls.sql` (now incl. grants), `sql/003_seed.sql` from it.
+- **Current focus:** Phase M1 — local half is **complete and verified**. Workflow changed 2026-08-11 to local-first (Supabase CLI + Docker); PLAN.md amended accordingly (`sql/001–003` replaced by `supabase/migrations/`). Three migrations written and passing all local accept tests. Remaining M1 work is promoting them to the cloud project.
+- **Notes from this session:**
+  - Local ports shifted +10 (54331+) in `supabase/config.toml`; another local project (`its_the_loop`) holds the default 54321+ range, and both now run side by side.
+  - Local stack auto-grants to `anon`/`authenticated`, unlike the cloud with auto-expose OFF — the explicit `revoke` in `rls_and_grants` is what makes the two environments match.
+  - Two migrations initially shared a timestamp (`db reset` failed on the migration table's primary key); the seed migration was renamed to `20260812020517`. Create migrations one at a time, or verify timestamps differ.
+- **Blockers:** Cloud push needs `supabase login` — interactive browser auth that only Jon can complete.
+- **Next immediate step:** Jon runs `! supabase login` and shares the project ref; then `supabase link --project-ref <ref>` + `supabase db push` (confirm first — it mutates the cloud DB), followed by the cloud accept tests.

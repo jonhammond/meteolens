@@ -10,7 +10,7 @@ Key platform facts this design relies on (verified Aug 2026):
 - **Open-Meteo**: free non-commercial, no key; hourly × a few locations is far under fair-use limits.
 - Publish-to-web embeds cache data ~1 hour — matches the hourly cadence.
 
-Decisions locked in: configurable `locations` table in Supabase; public Publish-to-web embed accepted; hourly trigger via cron-job.org; Data API settings at project creation: **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF** (so anon/authenticated hold no table privileges at all; `002_rls.sql` grants `service_role` least privilege explicitly).
+Decisions locked in: configurable `locations` table in Supabase; public Publish-to-web embed accepted; hourly trigger via cron-job.org; Data API settings at project creation: **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF** (so anon/authenticated hold no table privileges at all; the RLS migration grants `service_role` least privilege explicitly). **Local-first schema workflow**: the Supabase CLI runs the full stack in Docker, migrations are written and verified locally, then `supabase db push` promotes them to the cloud project — nothing is hand-pasted into the cloud SQL Editor.
 
 ## Architecture
 
@@ -41,7 +41,12 @@ app/
   weather_codes.py   # WMO code → description dict (single source of truth; also generates SQL seed)
   templates/index.html
   static/style.css
-sql/001_schema.sql  002_rls.sql  003_seed.sql
+supabase/
+  config.toml        # created by `supabase init`; local stack config
+  migrations/        # timestamped files from `supabase migration new` (never hand-named)
+    <ts>_create_schema.sql        # tables + index
+    <ts>_rls_and_grants.sql       # RLS on, revoke anon/authenticated, least-privilege service_role
+    <ts>_seed_reference_data.sql  # idempotent WMO codes + 12 locations (must reach prod → migration, not seed.sql)
 scripts/backfill_powerbi.py   # replay Supabase history into a (re)created push dataset
 requirements.txt    # flask, gunicorn, supabase, requests
 render.yaml         # web service, startCommand: gunicorn wsgi:app, healthCheckPath /healthz, secrets sync:false
@@ -51,8 +56,20 @@ wsgi.py
 
 ## Milestones (ordered; each independently verifiable)
 
-### M1 — Supabase schema
-Create free project (**Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**); run `sql/001–003` in the SQL Editor; seed `weather_codes` from the WMO dict and `locations` with the 12 Colorado cities below (coordinates verified against Open-Meteo's geocoding API; all `America/Denver`).
+### M1 — Supabase schema (local-first, then pushed)
+Cloud project already created (**Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**). Schema is developed against the local Docker stack and promoted:
+
+```
+supabase init                     # creates supabase/config.toml
+supabase start                    # local stack (first run pulls images, several minutes)
+supabase migration new <name>     # ×3 — never hand-author migration filenames
+supabase db reset                 # replays all migrations + seeds on a clean local DB
+# ... local accept tests (below) ...
+supabase login && supabase link --project-ref <ref>   # [USER] interactive browser auth
+supabase db push                  # promotes the same migrations to the cloud project
+```
+
+Migrations seed `weather_codes` from the WMO dict and `locations` with the 12 Colorado cities below (coordinates verified against Open-Meteo's geocoding API; all `America/Denver`). Seeds live in a migration rather than `supabase/seed.sql` because `db push` promotes only migrations and this reference data is required in prod. All seed inserts are idempotent (`on conflict`) so `db reset` and re-pushes are safe.
 
 ```sql
 insert into public.locations (name, latitude, longitude) values
@@ -103,9 +120,13 @@ create index weather_readings_loc_time_idx
 alter table public.locations        enable row level security;
 alter table public.weather_codes    enable row level security;
 alter table public.weather_readings enable row level security;
--- Auto-expose new tables is OFF: anon/authenticated hold no table privileges (requests fail
--- with permission denied); RLS with no policies is the second lock. Flask's secret key maps
--- to service_role (BYPASSRLS) and gets least privilege only — no deletes anywhere:
+-- Auto-expose new tables is OFF in the cloud: anon/authenticated hold no table privileges
+-- (requests fail with permission denied); RLS with no policies is the second lock. The LOCAL
+-- stack still auto-grants to anon/authenticated via default privileges, so revoke explicitly —
+-- this is what makes local match prod, and it is a harmless no-op against the cloud:
+revoke all on public.locations, public.weather_codes, public.weather_readings
+  from anon, authenticated;
+-- Flask's secret key maps to service_role (BYPASSRLS); least privilege only, no deletes:
 grant usage on schema public to service_role;
 grant select on public.locations to service_role;
 grant select, insert on public.weather_codes to service_role;          -- Unknown (N) fallback
@@ -115,10 +136,11 @@ grant select, insert, update on public.weather_readings to service_role;  -- ups
 
 Notes: seed the full Open-Meteo WMO code set (~28 codes); on an unseen code, insert it as `Unknown (N)` before the reading (keeps the FK). Request `timeformat=unixtime` from Open-Meteo so `recorded_at` is trivially UTC while `timezone=auto` (per API_PLAN.md) still drives local alignment. `SUPABASE_SERVICE_ROLE_KEY` may hold either the legacy `service_role` JWT or a new `sb_secret_...` secret key (legacy keys sunset end of 2026; both map to the `service_role` DB role).
 
-**Accept**: tables in dashboard; publishable/anon-key select fails with permission denied; secret-key select works; seeds present.
+**Accept (local)**: `supabase db reset` replays cleanly twice; all three tables present with RLS enabled; 28 weather codes + 12 locations; anon-key REST select → `42501` permission denied; service-key REST select → rows.
+**Accept (cloud)**: `supabase migration list` shows all three applied remotely; tables visible in the dashboard; publishable-key select fails with permission denied; seeds present.
 
 ### M2 — Flask skeleton
-Scaffold layout; `create_app()` raises at startup if any required env var is missing (no hardcoded fallbacks — project rule); `/healthz` → 200; `wsgi.py` exposes `app`.
+Scaffold layout; `create_app()` raises at startup if any required env var is missing (no hardcoded fallbacks — project rule); `/healthz` → 200; `wsgi.py` exposes `app`. Local dev points `SUPABASE_URL` at the local stack (`http://127.0.0.1:54321`) with keys from `supabase status`; the cloud URL + secret key are used only on Render.
 **Accept**: `gunicorn wsgi:app` runs locally with env populated; refuses to start with one unset; `curl /healthz` → 200.
 
 ### M3 — Ingestion endpoint (dual write)
