@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "26b8110e0a14dd900601",
   "position": {
-    "x": 480,
-    "y": 104,
+    "x": 764,
+    "y": 184,
+    "width": 484,
+    "height": 368,
     "z": 2000,
-    "height": 376,
-    "width": 400,
-    "tabOrder": 1000
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "lineClusteredColumnComboChart",
@@ -37,43 +37,52 @@
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData"
-                        }
-                      },
-                      "Property": "wind_speed_10m"
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
                     }
                   },
-                  "Function": 1
+                  "Property": "Wind Sustained"
                 }
               },
-              "queryRef": "Avg(RealTimeData.wind_speed_10m)",
-              "nativeQueryRef": "Sustained Avg.",
-              "displayName": "Sustained Avg."
+              "queryRef": "RealTimeData.Wind Sustained",
+              "nativeQueryRef": "Wind Sustained"
             },
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData"
-                        }
-                      },
-                      "Property": "wind_gusts_10m"
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
                     }
                   },
-                  "Function": 1
+                  "Property": "Wind Gust"
                 }
               },
-              "queryRef": "Avg(RealTimeData.wind_gusts_10m)",
-              "nativeQueryRef": "Gust Avg.",
-              "displayName": "Gust Avg."
+              "queryRef": "RealTimeData.Wind Gust",
+              "nativeQueryRef": "Wind Gust"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "AQI Avg"
+                }
+              },
+              "queryRef": "RealTimeData.AQI Avg",
+              "nativeQueryRef": "AQI Avg"
             }
           ]
         }
@@ -104,21 +113,21 @@
             "secShow": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
             "secShowAxisTitle": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
             "titleText": {
               "expr": {
                 "Literal": {
-                  "Value": "'km/h'"
+                  "Value": "'AQI'"
                 }
               }
             },
@@ -133,6 +142,20 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            },
+            "switchAxisPosition": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "secTitleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Wind Speed'"
                 }
               }
             }
@@ -193,7 +216,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Wind Speed'"
+                  "Value": "'Wind vs. AQI'"
                 }
               }
             },
@@ -239,46 +262,6 @@
   },
   "filterConfig": {
     "filters": [
-      {
-        "name": "81757ad137257dc18093",
-        "displayName": "Sustained Avg.",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "wind_speed_10m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "532148250880dc78360e",
-        "displayName": "Gust Avg.",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "wind_gusts_10m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
       {
         "name": "286cfa0edba1e7c15d27",
         "field": {

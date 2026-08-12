@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "d6d3f8b45adb202ae5a8",
+  "name": "93ac393f92891a02",
   "position": {
-    "x": 664,
+    "x": 464,
     "y": 568,
     "width": 184,
     "height": 120,
-    "z": 6000,
-    "tabOrder": 9
+    "z": 5000,
+    "tabOrder": 8
   },
   "visual": {
     "visualType": "cardVisual",
@@ -24,11 +24,11 @@
                       "Schema": "extension"
                     }
                   },
-                  "Property": "Cloud Latest"
+                  "Property": "Temp Latest"
                 }
               },
-              "queryRef": "RealTimeData.Cloud Latest",
-              "nativeQueryRef": "Cloud Latest"
+              "queryRef": "RealTimeData.Temp Latest",
+              "nativeQueryRef": "Temp Latest"
             }
           ]
         }
@@ -68,11 +68,10 @@
                     "Measure": {
                       "Expression": {
                         "SourceRef": {
-                          "Entity": "RealTimeData",
-                          "Schema": "extension"
+                          "Entity": "RealTimeData"
                         }
                       },
-                      "Property": "Cloud Color"
+                      "Property": "Temp Color"
                     }
                   }
                 }
@@ -96,11 +95,10 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Entity": "RealTimeData"
                     }
                   },
-                  "Property": "Cloud Title"
+                  "Property": "Temp Title"
                 }
               }
             }

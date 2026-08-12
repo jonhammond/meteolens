@@ -1,0 +1,132 @@
+{
+  "name": "date_slider",
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "queryRef": "RealTimeData.recorded_at",
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData"
+                    }
+                  },
+                  "Property": "recorded_at"
+                }
+              },
+              "nativeQueryRef": "recorded_at"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Between'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Date range (last 30 days)'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "position": {
+    "x": 264,
+    "y": 96,
+    "width": 984,
+    "height": 72,
+    "z": 0,
+    "tabOrder": 3
+  },
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d7bb9ad945cdddcb8d48",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "RealTimeData"
+              }
+            },
+            "Property": "recorded_at"
+          }
+        },
+        "type": "RelativeDate",
+        "howCreated": "User",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "RealTimeData",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Between": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "d"
+                        }
+                      },
+                      "Property": "recorded_at"
+                    }
+                  },
+                  "LowerBound": {
+                    "DateAdd": {
+                      "Amount": -30,
+                      "TimeUnit": 0,
+                      "Expression": {
+                        "Now": {}
+                      }
+                    }
+                  },
+                  "UpperBound": {
+                    "Now": {}
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

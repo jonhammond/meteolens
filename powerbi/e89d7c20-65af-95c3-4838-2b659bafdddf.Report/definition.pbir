@@ -3,7 +3,7 @@
   "version": "4.0",
   "datasetReference": {
     "byConnection": {
-      "connectionString": "Data Source=\"powerbi://api.powerbi.com/v1.0/myorg/My workspace\";initial catalog=meteolens;integrated security=ClaimsToken;semanticmodelid=b867510f-f015-4ba3-8838-cf61af63d65f"
+      "connectionString": "Data Source=\"powerbi://api.powerbi.com/v1.0/myorg/My workspace\";initial catalog=\"meteolens-v2\";integrated security=ClaimsToken;semanticmodelid=0f264b7c-c441-452c-890d-62b271a28d66"
     }
   }
 }

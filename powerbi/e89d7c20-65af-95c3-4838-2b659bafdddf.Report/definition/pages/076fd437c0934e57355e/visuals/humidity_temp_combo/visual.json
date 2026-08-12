@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "e4a920634697d2d70b4b",
+  "name": "6b2bd47ba38d5b19",
   "position": {
-    "x": 32,
-    "y": 96,
+    "x": 264,
+    "y": 184,
+    "width": 484,
+    "height": 368,
     "z": 1000,
-    "height": 384,
-    "width": 448,
-    "tabOrder": 0
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "lineClusteredColumnComboChart",
@@ -33,71 +33,56 @@
             }
           ]
         },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Aggregation": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData"
-                        }
-                      },
-                      "Property": "relative_humidity_2m"
-                    }
-                  },
-                  "Function": 1
-                }
-              },
-              "queryRef": "Sum(RealTimeData.relative_humidity_2m)",
-              "nativeQueryRef": "RH",
-              "displayName": "RH"
-            }
-          ]
-        },
         "Y2": {
           "projections": [
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData"
-                        }
-                      },
-                      "Property": "apparent_temperature"
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
                     }
                   },
-                  "Function": 1
+                  "Property": "Temp Feels Like"
                 }
               },
-              "queryRef": "Avg(RealTimeData.apparent_temperature)",
-              "nativeQueryRef": "Feels Like",
-              "displayName": "Feels Like"
+              "queryRef": "RealTimeData.Temp Feels Like",
+              "nativeQueryRef": "Temp Feels Like"
             },
             {
               "field": {
-                "Aggregation": {
+                "Measure": {
                   "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData"
-                        }
-                      },
-                      "Property": "temperature_2m"
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
                     }
                   },
-                  "Function": 1
+                  "Property": "Temp Actual"
                 }
               },
-              "queryRef": "Avg(RealTimeData.temperature_2m)",
-              "nativeQueryRef": "Actual",
-              "displayName": "Actual"
+              "queryRef": "RealTimeData.Temp Actual",
+              "nativeQueryRef": "Temp Actual"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "RH Avg"
+                }
+              },
+              "queryRef": "RealTimeData.RH Avg",
+              "nativeQueryRef": "RH Avg"
             }
           ]
         }
@@ -125,6 +110,20 @@
       "valueAxis": [
         {
           "properties": {
+            "secShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "secShowAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
             "titleText": {
               "expr": {
                 "Literal": {
@@ -139,10 +138,10 @@
                 }
               }
             },
-            "secTitleText": {
+            "secRoundRange": {
               "expr": {
                 "Literal": {
-                  "Value": "'°C'"
+                  "Value": "false"
                 }
               }
             },
@@ -153,10 +152,30 @@
                 }
               }
             },
-            "secShow": {
+            "secTitleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Temperature'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "legend": [
+        {
+          "properties": {
+            "show": {
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'TopCenter'"
                 }
               }
             }
@@ -176,34 +195,13 @@
           }
         }
       ],
-      "legend": [
+      "labels": [
         {
           "properties": {
-            "position": {
-              "expr": {
-                "Literal": {
-                  "Value": "'TopCenter'"
-                }
-              }
-            },
-            "legendMarkerRendering": {
-              "expr": {
-                "Literal": {
-                  "Value": "'markerOnly'"
-                }
-              }
-            },
-            "showTitle": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -239,7 +237,7 @@
           }
         }
       ],
-      "divider": [
+      "border": [
         {
           "properties": {
             "show": {
@@ -248,31 +246,11 @@
                   "Value": "false"
                 }
               }
-            }
-          }
-        }
-      ],
-      "padding": [
-        {
-          "properties": {
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "5D"
-                }
-              }
             },
-            "left": {
+            "radius": {
               "expr": {
                 "Literal": {
-                  "Value": "5D"
-                }
-              }
-            },
-            "top": {
-              "expr": {
-                "Literal": {
-                  "Value": "5D"
+                  "Value": "1D"
                 }
               }
             }
@@ -285,7 +263,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "e9d08e1d3686833350ce",
+        "name": "acaf951c804da563ac79",
         "field": {
           "Column": {
             "Expression": {
@@ -297,63 +275,6 @@
           }
         },
         "type": "Categorical"
-      },
-      {
-        "name": "ecd783e0d4906d4e4182",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "apparent_temperature"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "a721f9e3969de6acb4cb",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "temperature_2m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "deeebc9eade000ea62be",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "RealTimeData"
-                  }
-                },
-                "Property": "relative_humidity_2m"
-              }
-            },
-            "Function": 1
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }
