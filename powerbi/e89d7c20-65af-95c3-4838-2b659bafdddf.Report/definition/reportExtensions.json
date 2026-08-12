@@ -7,25 +7,25 @@
       "measures": [
         {
           "name": "Wind Sustained",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Wind Gust",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGE('RealTimeData'[wind_gusts_10m]), AVERAGE('RealTimeData'[wind_gusts_10m_mph]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_gusts_10m]), AVERAGE('RealTimeData'[wind_gusts_10m_mph]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Temp Actual",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Temp Feels Like",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGE('RealTimeData'[apparent_temperature]), AVERAGE('RealTimeData'[apparent_temperature_f]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[apparent_temperature]), AVERAGE('RealTimeData'[apparent_temperature_f]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
@@ -43,13 +43,13 @@
         },
         {
           "name": "Precip Latest",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation_in]), 'RealTimeData'[recorded_at] = t)))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation_in]), 'RealTimeData'[recorded_at] = t)))",
           "dataType": "Decimal",
           "formatString": "#,0.00"
         },
         {
           "name": "Temp Latest",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m_f]), 'RealTimeData'[recorded_at] = t)))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m_f]), 'RealTimeData'[recorded_at] = t)))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
@@ -61,7 +61,7 @@
         },
         {
           "name": "Wind Latest",
-          "expression": "IF([Selected Unit] = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m_mph]), 'RealTimeData'[recorded_at] = t)))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m_mph]), 'RealTimeData'[recorded_at] = t)))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
@@ -73,12 +73,12 @@
         },
         {
           "name": "Precip Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Precipitation (\" & IF([Selected Unit] = \"Metric\", \"mm\", \"in\") & \")\"",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Precipitation (\" & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"mm\", \"in\") & \")\"",
           "dataType": "Text"
         },
         {
           "name": "Temp Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Temperature (\" & UNICHAR(176) & IF([Selected Unit] = \"Metric\", \"C\", \"F\") & \")\"",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Temperature (\" & UNICHAR(176) & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"C\", \"F\") & \")\"",
           "dataType": "Text"
         },
         {
@@ -88,7 +88,7 @@
         },
         {
           "name": "Wind Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Wind Speed (\" & IF([Selected Unit] = \"Metric\", \"km/h\", \"mph\") & \")\"",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Wind Speed (\" & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"km/h\", \"mph\") & \")\"",
           "dataType": "Text"
         },
         {

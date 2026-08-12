@@ -31,7 +31,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'HorizontalList'"
+                  "Value": "'Basic'"
                 }
               }
             }
@@ -58,6 +58,19 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "orientation": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
                 }
               }
             }
