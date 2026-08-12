@@ -13,9 +13,9 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 - [x] `supabase migration new seed_reference_data` — idempotent inserts: WMO codes (generated from `weather_codes.py`) + the 12 Colorado cities with verified coordinates
 - [x] `supabase db reset` — replayed cleanly twice; counts stable at 28 codes / 12 locations (seeds are idempotent)
 - [x] Local accept tests: 3 tables with RLS enabled, 28 codes, 12 locations, grants correct (anon/authenticated absent entirely); anon-key REST select → `42501` permission denied; secret-key REST select → rows
-- [ ] **[USER]** `supabase login` (interactive browser auth), then share the project ref
-- [ ] `supabase link --project-ref <ref>` then `supabase db push` (mutates the cloud DB — confirm before running)
-- [ ] Cloud accept tests: `supabase migration list` shows all three applied remotely; tables in dashboard; publishable-key select → permission denied; seeds present
+- [x] **[USER]** `supabase login` — not needed; an existing CLI session was already in the keychain. Project ref `yddbzlmdaqrpzuumeodg` (us-east-2)
+- [x] `supabase link --project-ref yddbzlmdaqrpzuumeodg` then `supabase db push` — all three migrations applied to the cloud
+- [x] Cloud accept tests: `supabase migration list` shows all three local/remote versions matching; remote query returns 28 codes / 12 locations / 3 RLS-enabled tables; publishable-key REST select → HTTP 401 `42501` permission denied (verified by Jon)
 
 **Accept (local):** `db reset` replays cleanly twice; anon-key select → permission denied; service-key select → rows; seeds present.
 **Accept (cloud):** all three migrations applied remotely; tables in dashboard; publishable-key select → permission denied; seeds present.
