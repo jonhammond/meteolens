@@ -72,9 +72,9 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 - [x] **[USER]** New → Streaming dataset → API, name `meteolens`, fields per PLAN.md M7 step 1, **Historic data analysis: ON**; copy Push URL → set `POWERBI_PUSH_URL` on Render (secret — never in git) — done by Jon 2026-08-11: dataset visible in My Workspace as a semantic model, `POWERBI_PUSH_URL` set on Render (redeployed). *The "retired soon" dialog was dismissed with OK; creation supported until 2027-10-31, existing models unaffected (see PLAN.md Risks)*
 - [x] **[USER]** Verify the Publish-to-web menu item exists early (tenant setting risk from PLAN.md) — confirmed by Jon: `File → Embed report → Publish to web (public)` present on the saved report in Reading view
-- [ ] Write `scripts/backfill_powerbi.py` — replay Supabase history into a (re)created push dataset
-- [ ] Trigger one ingest so rows exist; run backfill if Supabase already holds history
-- [ ] **[USER]** Create report: temp line chart, wind combo chart, temp×humidity scatter, 3 conditional KPI cards (Field value → `*_color` columns), slicers on `weather_desc` + `location`
+- [x] Write `scripts/backfill_powerbi.py` — replay Supabase history into a (re)created push dataset. Reuses `app.ingest.build_pbi_row` (renamed public from `_build_pbi_row`) so replayed rows are byte-identical to live pushes; paginates PostgREST with `.range()`; `--since`/`--before`/`--dry-run`/`--batch-size`; ≥1s between batches. **Push datasets have no dedupe** — always bound a replay with `--before` to exclude rows the live pipeline already pushed (cutoff for this deploy: `2026-08-12T06:00:00Z`)
+- [x] **[USER]** Run backfill (needs cloud secrets only Jon holds; run in his own terminal via `read -s` so secrets never hit history/scrollback) — done by Jon 2026-08-11: dry-run then real run with `--before 2026-08-12T06:00:00Z`, replaying the placeholder-era history (~36 rows). Live pushes take over from the 06:00 UTC cron onward
+- [x] **[USER]** Create report: temp line chart, wind combo chart, temp×humidity scatter, 3 conditional KPI cards (Field value → `*_color` columns), slicers on `weather_desc` + `location` — confirmed done by Jon 2026-08-12 (cards use Card visual + Top-1-by-Latest-`recorded_at` visual filter + fx Field-value background)
 - [ ] **[USER]** File → Embed report → Publish to web → copy embed URL → set `POWERBI_EMBED_URL` on Render → redeploy
 
 **Accept:** report renders logged-out at the public URL and inside meteolens.jonhammond.org; slicers filter all visuals.
