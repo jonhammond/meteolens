@@ -132,7 +132,11 @@ def run_ingest(cfg):
     coords = [(location["latitude"], location["longitude"]) for location in locations]
 
     try:
-        readings = fetch_current_batch(coords) if coords else []
+        readings = (
+            fetch_current_batch(coords, api_key=cfg.OPEN_METEO_API_KEY)
+            if coords
+            else []
+        )
     except OpenMeteoError as exc:
         error_text = f"error: {_short(exc)}"
         for location in locations:

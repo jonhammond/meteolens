@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 import requests
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
+# Paid API subscriptions use a dedicated host with per-key (not per-IP) quotas.
+CUSTOMER_FORECAST_URL = "https://customer-api.open-meteo.com/v1/forecast"
 
 # Open-Meteo asks fair-use API consumers to identify themselves.
 USER_AGENT = "MeteoLens/1.0 (+https://meteolens.jonhammond.org)"
@@ -45,8 +47,12 @@ def _current_to_reading(current):
     return result
 
 
-def fetch_current_batch(coords):
+def fetch_current_batch(coords, api_key=None):
     """Fetch the current-conditions block for every (latitude, longitude) pair.
+
+    With `api_key` set, requests go to the customer host and are metered
+    against the key's own quota instead of the source IP's — required on
+    Render, whose shared egress IPs exhaust the free per-IP quota.
 
     Open-Meteo's forecast endpoint accepts comma-separated coordinate lists:
     with N>1 pairs the top-level response payload is a JSON array of full
@@ -66,6 +72,10 @@ def fetch_current_batch(coords):
         "timezone": "auto",
         "timeformat": "unixtime",
     }
+    url = FORECAST_URL
+    if api_key:
+        url = CUSTOMER_FORECAST_URL
+        params["apikey"] = api_key
     headers = {"User-Agent": USER_AGENT}
 
     attempts = 2
@@ -73,7 +83,7 @@ def fetch_current_batch(coords):
     for attempt in range(attempts):
         try:
             resp = requests.get(
-                FORECAST_URL, params=params, headers=headers, timeout=TIMEOUT_SECONDS
+                url, params=params, headers=headers, timeout=TIMEOUT_SECONDS
             )
         except requests.RequestException as exc:
             last_error = exc

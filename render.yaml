@@ -32,3 +32,9 @@ services:
       # renders a "report pending" placeholder instead of an iframe.
       - key: POWERBI_EMBED_URL
         sync: false
+      # Paid Open-Meteo key — routes fetches to customer-api.open-meteo.com
+      # with a per-key quota. Required on Render: the free keyless API is
+      # metered per source IP, and Render's shared egress IPs are exhausted
+      # by other tenants. Optional locally (unset = free keyless host).
+      - key: OPEN_METEO_API_KEY
+        sync: false
