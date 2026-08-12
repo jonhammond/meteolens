@@ -73,6 +73,13 @@
                   "Value": "1D"
                 }
               }
+            },
+            "responsive": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
             }
           }
         }
@@ -81,70 +88,15 @@
     "drillFilterOtherVisuals": true
   },
   "position": {
-    "x": 1048,
+    "x": 968,
     "y": 24,
-    "width": 200,
-    "height": 48,
+    "width": 280,
+    "height": 56,
     "z": 0,
     "tabOrder": 1
   },
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "filterConfig": {
-    "filters": [
-      {
-        "name": "42c146f48c48bb15822e",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Units"
-              }
-            },
-            "Property": "unit"
-          }
-        },
-        "type": "Categorical",
-        "howCreated": "User",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "d",
-              "Entity": "Units",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "d"
-                          }
-                        },
-                        "Property": "unit"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "'Metric'"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
+    "filters": []
   }
 }
