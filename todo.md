@@ -4,15 +4,15 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 ## Phase M1 — Supabase schema
 
-- [ ] **[USER]** Create free Supabase project; note project URL and service-role key
+- [ ] **[USER]** Create free Supabase project with **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**; note project URL and a secret (`sb_secret_...`) key
 - [ ] Write `app/weather_codes.py` — full WMO code → description dict (~28 codes, single source of truth) with a helper that emits the SQL seed
 - [ ] Write `sql/001_schema.sql` — `locations`, `weather_codes`, `weather_readings` tables, `unique (location_id, recorded_at)`, `weather_readings_loc_time_idx`
-- [ ] Write `sql/002_rls.sql` — enable RLS on all three tables, no anon policies (deny-by-default)
+- [ ] Write `sql/002_rls.sql` — enable RLS on all three tables, no anon policies (deny-by-default), least-privilege `service_role` grants per PLAN.md (auto-expose is OFF; no deletes anywhere)
 - [ ] Write `sql/003_seed.sql` — WMO codes (generated from `weather_codes.py`) + the 12 Colorado cities with verified coordinates
 - [ ] **[USER]** Run `sql/001–003` in the Supabase SQL Editor
-- [ ] Verify accept criteria: tables visible in dashboard; anon-key select returns zero rows; seeds present
+- [ ] Verify accept criteria: tables visible in dashboard; publishable/anon-key select → permission denied; secret-key select works; seeds present
 
-**Accept:** tables in dashboard; anon-key select returns zero rows; seeds present.
+**Accept:** tables in dashboard; publishable/anon-key select fails with permission denied; secret-key select works; seeds present.
 
 ## Phase M2 — Flask skeleton
 
@@ -74,7 +74,7 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 ## Phase M8 — End-to-end verification
 
 - [ ] Local: POST `/api/ingest` with token → 200 + per-location `ok`; wrong token → 401; GET → 405
-- [ ] Supabase: one new UTC row per active location; re-run adds no dupes; anon key sees zero rows
+- [ ] Supabase: one new UTC row per active location; re-run adds no dupes; publishable/anon key gets permission denied
 - [ ] Power BI: dataset row count grows after ingest; report shows the new hour
 - [ ] `https://meteolens.jonhammond.org/` resolves with valid TLS; cards match Supabase latest rows
 - [ ] cron-job.org: pre-warm at :57 and ingest at :00 succeed 3 consecutive hours
@@ -87,6 +87,6 @@ Granular task list derived from [PLAN.md](PLAN.md). Each phase maps 1:1 to a PLA
 
 **Last updated:** 2026-08-11
 
-- **Current focus:** Project bootstrap. `todo.md` generated from PLAN.md milestones M1–M8; no application code written yet.
-- **Blockers:** None. (M1 needs the Supabase project created before SQL can be run, but the SQL files themselves can be written first.)
-- **Next immediate step:** Phase M1 — write `app/weather_codes.py` (WMO dict) and generate `sql/001_schema.sql`, `sql/002_rls.sql`, `sql/003_seed.sql` from it.
+- **Current focus:** Project bootstrap. Jon is creating the Supabase project. Decision made 2026-08-11: Data API ON, automatic RLS ON, auto-expose new tables OFF — PLAN.md M1 amended with explicit least-privilege `service_role` grants and permission-denied (not zero-rows) accept criteria. `SUPABASE_SERVICE_ROLE_KEY` will hold a new-style `sb_secret_...` key.
+- **Blockers:** None. (M1 SQL can be written before the Supabase project exists.)
+- **Next immediate step:** Phase M1 — write `app/weather_codes.py` (WMO dict) and generate `sql/001_schema.sql`, `sql/002_rls.sql` (now incl. grants), `sql/003_seed.sql` from it.

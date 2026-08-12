@@ -10,7 +10,7 @@ Key platform facts this design relies on (verified Aug 2026):
 - **Open-Meteo**: free non-commercial, no key; hourly × a few locations is far under fair-use limits.
 - Publish-to-web embeds cache data ~1 hour — matches the hourly cadence.
 
-Decisions locked in: configurable `locations` table in Supabase; public Publish-to-web embed accepted; hourly trigger via cron-job.org.
+Decisions locked in: configurable `locations` table in Supabase; public Publish-to-web embed accepted; hourly trigger via cron-job.org; Data API settings at project creation: **Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF** (so anon/authenticated hold no table privileges at all; `002_rls.sql` grants `service_role` least privilege explicitly).
 
 ## Architecture
 
@@ -52,7 +52,7 @@ wsgi.py
 ## Milestones (ordered; each independently verifiable)
 
 ### M1 — Supabase schema
-Create free project; run `sql/001–003` in the SQL Editor; seed `weather_codes` from the WMO dict and `locations` with the 12 Colorado cities below (coordinates verified against Open-Meteo's geocoding API; all `America/Denver`).
+Create free project (**Enable Data API ON**, **automatic RLS ON**, **automatically expose new tables OFF**); run `sql/001–003` in the SQL Editor; seed `weather_codes` from the WMO dict and `locations` with the 12 Colorado cities below (coordinates verified against Open-Meteo's geocoding API; all `America/Denver`).
 
 ```sql
 insert into public.locations (name, latitude, longitude) values
@@ -103,12 +103,19 @@ create index weather_readings_loc_time_idx
 alter table public.locations        enable row level security;
 alter table public.weather_codes    enable row level security;
 alter table public.weather_readings enable row level security;
--- No anon policies (deny-by-default); Flask uses the service-role key server-side (bypasses RLS).
+-- Auto-expose new tables is OFF: anon/authenticated hold no table privileges (requests fail
+-- with permission denied); RLS with no policies is the second lock. Flask's secret key maps
+-- to service_role (BYPASSRLS) and gets least privilege only — no deletes anywhere:
+grant usage on schema public to service_role;
+grant select on public.locations to service_role;
+grant select, insert on public.weather_codes to service_role;          -- Unknown (N) fallback
+grant select, insert, update on public.weather_readings to service_role;  -- upsert
+-- Identity columns need no sequence grants (unlike serial).
 ```
 
-Notes: seed the full Open-Meteo WMO code set (~28 codes); on an unseen code, insert it as `Unknown (N)` before the reading (keeps the FK). Request `timeformat=unixtime` from Open-Meteo so `recorded_at` is trivially UTC while `timezone=auto` (per API_PLAN.md) still drives local alignment.
+Notes: seed the full Open-Meteo WMO code set (~28 codes); on an unseen code, insert it as `Unknown (N)` before the reading (keeps the FK). Request `timeformat=unixtime` from Open-Meteo so `recorded_at` is trivially UTC while `timezone=auto` (per API_PLAN.md) still drives local alignment. `SUPABASE_SERVICE_ROLE_KEY` may hold either the legacy `service_role` JWT or a new `sb_secret_...` secret key (legacy keys sunset end of 2026; both map to the `service_role` DB role).
 
-**Accept**: tables in dashboard; anon-key select returns zero rows; seeds present.
+**Accept**: tables in dashboard; publishable/anon-key select fails with permission denied; secret-key select works; seeds present.
 
 ### M2 — Flask skeleton
 Scaffold layout; `create_app()` raises at startup if any required env var is missing (no hardcoded fallbacks — project rule); `/healthz` → 200; `wsgi.py` exposes `app`.
@@ -147,7 +154,7 @@ Two jobs: pre-warm GET `/healthz` at `57 * * * *`; ingest POST `/api/ingest` at 
 
 ### M8 — End-to-end verification checklist
 - [ ] Local: POST `/api/ingest` with token → 200 + per-location `ok`; wrong token → 401; GET → 405.
-- [ ] Supabase: one new UTC row per active location; re-run adds no dupes; anon key sees zero rows.
+- [ ] Supabase: one new UTC row per active location; re-run adds no dupes; publishable/anon key gets permission denied.
 - [ ] Power BI: dataset row count grows after ingest; report shows the new hour.
 - [ ] `https://meteolens.jonhammond.org/` resolves with valid TLS; cards match Supabase latest rows.
 - [ ] cron-job.org: pre-warm at :57 and ingest at :00 succeed 3 consecutive hours.
