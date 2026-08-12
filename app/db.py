@@ -92,6 +92,30 @@ def upsert_reading(client, row):
     ).execute()
 
 
+def upsert_readings(client, rows, chunk_size=500):
+    """Upsert many weather_readings rows in chunks.
+
+    Mirrors upsert_reading's on_conflict target (location_id,recorded_at) so
+    re-running a backfill for the same hours updates in place instead of
+    duplicating rows. Rows are chunked because PostgREST/the underlying HTTP
+    request has practical payload-size limits; sending thousands of backfill
+    rows in one call risks hitting them, so this splits into `chunk_size`
+    batches and issues one `.upsert()` call per batch. No-op on empty input.
+    Returns the total number of rows upserted.
+    """
+    if not rows:
+        return 0
+    total = 0
+    for start in range(0, len(rows), chunk_size):
+        batch = rows[start : start + chunk_size]
+        payload = [_coerce_reading(row) for row in batch]
+        client.table("weather_readings").upsert(
+            payload, on_conflict="location_id,recorded_at"
+        ).execute()
+        total += len(payload)
+    return total
+
+
 def fetch_latest_per_location(client):
     """Newest reading per active location, joined to location name + weather description.
 
