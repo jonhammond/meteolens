@@ -56,6 +56,48 @@ main {
   padding: 0 1.5rem 3rem;
 }
 
+.unit-toggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin: 0 0 0.75rem;
+  padding: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: fit-content;
+  margin-left: auto;
+}
+
+.unit-toggle button {
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: calc(var(--radius) - 4px);
+  cursor: pointer;
+}
+
+.unit-toggle button[aria-pressed="true"] {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.val-imperial {
+  display: none;
+}
+
+.units-imperial .val-metric {
+  display: none;
+}
+
+.units-imperial .val-imperial {
+  display: inline;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));

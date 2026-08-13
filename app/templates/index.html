@@ -31,6 +31,10 @@
 
     <section aria-label="Latest conditions by location">
       {% if readings %}
+        <div class="unit-toggle" id="unit-toggle" role="group" aria-label="Units" hidden>
+          <button type="button" data-unit="metric" aria-pressed="true">Metric</button>
+          <button type="button" data-unit="imperial" aria-pressed="false">Imperial</button>
+        </div>
         <div class="card-grid">
           {% for r in readings %}
             <article class="card">
@@ -38,11 +42,13 @@
               <p class="card-desc">{{ r.weather_desc or "—" }}</p>
 
               <p class="card-temp">
-                {{ "%.0f"|format(r.temperature_2m) ~ "°C" if r.temperature_2m is not none else "—" }}
+                <span class="val-metric">{{ "%.0f"|format(r.temperature_2m) ~ "°C" if r.temperature_2m is not none else "—" }}</span>
+                <span class="val-imperial">{{ "%.0f"|format(r.temperature_2m_f) ~ "°F" if r.temperature_2m_f is not none else "—" }}</span>
               </p>
               <p class="card-feelslike">
                 Feels like
-                {{ "%.0f"|format(r.apparent_temperature) ~ "°C" if r.apparent_temperature is not none else "—" }}
+                <span class="val-metric">{{ "%.0f"|format(r.apparent_temperature) ~ "°C" if r.apparent_temperature is not none else "—" }}</span>
+                <span class="val-imperial">{{ "%.0f"|format(r.apparent_temperature_f) ~ "°F" if r.apparent_temperature_f is not none else "—" }}</span>
               </p>
 
               <dl class="card-stats">
@@ -52,7 +58,10 @@
                 </div>
                 <div>
                   <dt>Precipitation</dt>
-                  <dd>{{ "%.1f"|format(r.precipitation) ~ " mm" if r.precipitation is not none else "—" }}</dd>
+                  <dd>
+                    <span class="val-metric">{{ "%.1f"|format(r.precipitation) ~ " mm" if r.precipitation is not none else "—" }}</span>
+                    <span class="val-imperial">{{ "%.2f"|format(r.precipitation_in) ~ " in" if r.precipitation_in is not none else "—" }}</span>
+                  </dd>
                 </div>
                 <div>
                   <dt>Cloud cover</dt>
@@ -60,11 +69,17 @@
                 </div>
                 <div>
                   <dt>Wind</dt>
-                  <dd>{{ "%.0f"|format(r.wind_speed_10m) ~ " km/h" if r.wind_speed_10m is not none else "—" }}</dd>
+                  <dd>
+                    <span class="val-metric">{{ "%.0f"|format(r.wind_speed_10m) ~ " km/h" if r.wind_speed_10m is not none else "—" }}</span>
+                    <span class="val-imperial">{{ "%.0f"|format(r.wind_speed_10m_mph) ~ " mph" if r.wind_speed_10m_mph is not none else "—" }}</span>
+                  </dd>
                 </div>
                 <div>
                   <dt>Gusts</dt>
-                  <dd>{{ "%.0f"|format(r.wind_gusts_10m) ~ " km/h" if r.wind_gusts_10m is not none else "—" }}</dd>
+                  <dd>
+                    <span class="val-metric">{{ "%.0f"|format(r.wind_gusts_10m) ~ " km/h" if r.wind_gusts_10m is not none else "—" }}</span>
+                    <span class="val-imperial">{{ "%.0f"|format(r.wind_gusts_10m_mph) ~ " mph" if r.wind_gusts_10m_mph is not none else "—" }}</span>
+                  </dd>
                 </div>
                 <div>
                   <dt>AQI</dt>
@@ -174,5 +189,50 @@
       })();
     </script>
   {% endif %}
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "meteolens-units";
+      var toggle = document.getElementById("unit-toggle");
+      if (!toggle) {
+        return;
+      }
+      var section = toggle.closest("section");
+      var buttons = toggle.querySelectorAll("button[data-unit]");
+
+      function applyUnit(unit) {
+        var imperial = unit === "imperial";
+        section.classList.toggle("units-imperial", imperial);
+        buttons.forEach(function (btn) {
+          var isActive = btn.getAttribute("data-unit") === unit;
+          btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+      }
+
+      var storedUnit = "metric";
+      try {
+        var stored = localStorage.getItem(STORAGE_KEY);
+        if (stored === "imperial") {
+          storedUnit = "imperial";
+        }
+      } catch (err) {
+        // localStorage unavailable (e.g. Safari private mode); default to metric.
+      }
+      applyUnit(storedUnit);
+      toggle.hidden = false;
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var unit = btn.getAttribute("data-unit");
+          applyUnit(unit);
+          try {
+            localStorage.setItem(STORAGE_KEY, unit);
+          } catch (err) {
+            // Safari private mode throws on setItem; toggle still works for the session.
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
