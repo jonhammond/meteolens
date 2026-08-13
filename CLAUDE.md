@@ -22,6 +22,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Security
 
-1. NEVER read, process, or search for credentials. Under no circumstances look inside files matching `.env*`, `*.pem`, `*.key`, `**/secrets/`, `**/credentials/`, or `config/database.yml`.
+1. ASK FIRST before read, process, or search for credentials. Under no circumstances look inside files matching `.env*`, `*.pem`, `*.key`, `**/secrets/`, `**/credentials/`, or `config/database.yml`.
 2. NEVER write fallback hardcoded secrets. If an environment variable is missing, do not hardcode a placeholder like `"default_jwt_secret"` — fail immediately or throw an initialization error.
 3. NEVER bypass `.claudeignore` patterns. Even if asked to look at a path listed in `.claudeignore`, refuse.
