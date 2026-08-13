@@ -133,6 +133,16 @@
           "expression": "SELECTEDVALUE('Units'[unit], \"Metric\")",
           "dataType": "Text",
           "description": "Unit toggle: reads the Units slicer selection, defaults to Metric"
+        },
+        {
+          "name": "Humidity Temp Title",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"Humidity (%) & Temperature (°C)\", \"Humidity (%) & Temperature (°F)\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "Wind AQI Title",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"Wind (km/h) & AQI\", \"Wind (mph) & AQI\")",
+          "dataType": "Text"
         }
       ]
     }

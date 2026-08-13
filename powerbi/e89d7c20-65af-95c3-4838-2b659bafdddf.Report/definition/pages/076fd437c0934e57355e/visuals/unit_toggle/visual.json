@@ -88,11 +88,11 @@
     "drillFilterOtherVisuals": true
   },
   "position": {
-    "x": 968,
-    "y": 24,
+    "x": 40,
+    "y": 84,
     "width": 280,
     "height": 56,
-    "z": 0,
+    "z": 100,
     "tabOrder": 1
   },
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",

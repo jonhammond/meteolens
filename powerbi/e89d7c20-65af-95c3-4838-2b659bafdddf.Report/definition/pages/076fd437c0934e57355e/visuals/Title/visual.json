@@ -2,9 +2,9 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "771de60a27cda47a",
   "position": {
-    "x": 32,
-    "y": 24,
-    "width": 500,
+    "x": 24,
+    "y": 16,
+    "width": 600,
     "height": 48,
     "z": 0,
     "tabOrder": 0
@@ -19,9 +19,23 @@
               {
                 "textRuns": [
                   {
-                    "value": "MeteoLens — Colorado Weather",
+                    "value": "MeteoLens",
                     "textStyle": {
-                      "fontSize": "24pt"
+                      "fontSize": "20pt",
+                      "fontWeight": "600",
+                      "fontFamily": "Segoe UI Semibold, wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+                      "color": "#252423"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Colorado weather & air quality",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#605E5C"
                     }
                   }
                 ]
