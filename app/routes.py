@@ -93,7 +93,8 @@ def api_embed_token():
 
     try:
         return jsonify(embed.get_embed_token(cfg)), 200
-    except EmbedError:
-        # Generic message only: never leak upstream error detail that could
-        # embed a status code tied to the client secret or tenant.
+    except EmbedError as exc:
+        # Server log gets the failing step + status/error code (never secrets);
+        # the public response stays generic.
+        current_app.logger.warning("embed token fetch failed: %s", exc)
         return jsonify(error="embed token unavailable"), 503
