@@ -32,7 +32,9 @@ Twelve Colorado cities: Denver, Colorado Springs, Pueblo, Leadville, Fort Collin
 
 ## Project status
 
-📐 **Planning complete; implementation not yet started.**
+🚀 **Shipped and live at [meteolens.jonhammond.org](https://meteolens.jonhammond.org).** Hourly ingestion, the Supabase system of record, the Power BI report, and the public site are all in production.
+
+Design and architecture docs are kept for reference:
 
 - [PLAN.md](PLAN.md) — full architecture, database schema, milestones M1–M8, risks, and verification checklist
 - [API_PLAN.md](API_PLAN.md) — Open-Meteo fields targeted and the Power BI visual requirements they serve
