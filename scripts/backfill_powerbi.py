@@ -11,6 +11,8 @@ in the dataset.
 Usage:
     .venv/bin/python scripts/backfill_powerbi.py --dry-run
     .venv/bin/python scripts/backfill_powerbi.py --since 2026-01-01T00:00:00Z
+    .venv/bin/python scripts/backfill_powerbi.py --dataset-id <GUID> \
+        --workspace-id <GUID> --since 2026-01-01T00:00:00Z
 """
 
 import argparse
@@ -25,8 +27,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app import db  # noqa: E402
 from app.ingest import build_pbi_row  # noqa: E402
 from app.powerbi import PowerBIError, push_rows  # noqa: E402
+from create_powerbi_dataset import (  # noqa: E402
+    CreateDatasetError,
+    get_access_token,
+    push_table_rows,
+)
 
-REQUIRED_VARS = ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "POWERBI_PUSH_URL")
+REQUIRED_VARS = ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY")
+URL_MODE_REQUIRED_VARS = ("POWERBI_PUSH_URL",)
 
 # PostgREST caps a single response at ~1000 rows regardless of .limit(),
 # so fetching must page with .range() rather than trusting one call.
@@ -46,17 +54,21 @@ class BackfillError(RuntimeError):
     """Raised for any fatal backfill failure (env, fetch, or push)."""
 
 
-def _load_env():
+def _load_env(require_push_url):
     """Read required env vars from the process environment only.
 
-    Fails fast with every missing name listed, never a hardcoded fallback.
+    POWERBI_PUSH_URL is only required when actually pushing via URL mode
+    (not --dry-run, no --dataset-id); bearer mode authenticates via the
+    Azure CLI instead. Fails fast with every missing name listed, never a
+    hardcoded fallback.
     """
-    missing = [name for name in REQUIRED_VARS if not (os.environ.get(name) or "").strip()]
+    names = REQUIRED_VARS + (URL_MODE_REQUIRED_VARS if require_push_url else ())
+    missing = [name for name in names if not (os.environ.get(name) or "").strip()]
     if missing:
         raise BackfillError(
             "Missing required environment variable(s): " + ", ".join(sorted(missing))
         )
-    return {name: os.environ[name].strip() for name in REQUIRED_VARS}
+    return {name: os.environ[name].strip() for name in names}
 
 
 class _Cfg:
@@ -135,17 +147,18 @@ def enrich_readings(readings, locations_by_id):
     return pbi_rows
 
 
-def push_in_batches(push_url, rows, batch_size):
-    """POST `rows` to Power BI in batches of at most `batch_size`.
+def push_in_batches(push_batch, rows, batch_size):
+    """Push `rows` to Power BI in batches of at most `batch_size`.
 
+    `push_batch(batch)` does the actual send (URL mode or bearer mode).
     Sleeps at least 1s between batches to respect the push API's ~1 req/sec
-    limit. Prints per-batch progress; propagates the first PowerBIError.
+    limit. Prints per-batch progress; propagates the first error raised.
     """
     total_batches = (len(rows) + batch_size - 1) // batch_size
     for batch_num in range(total_batches):
         start = batch_num * batch_size
         batch = rows[start : start + batch_size]
-        push_rows(push_url, batch)
+        push_batch(batch)
         print(f"batch {batch_num + 1}/{total_batches}: pushed {len(batch)} rows")
         if batch_num < total_batches - 1:
             time.sleep(PUSH_RATE_LIMIT_SECONDS)
@@ -183,14 +196,36 @@ def parse_args(argv=None):
         action="store_true",
         help="fetch + enrich only; print row count, time range, and one sample row, never POST",
     )
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--dataset-id",
+        default=None,
+        metavar="GUID",
+        help=(
+            "push via the Power BI REST rows API using an Azure CLI bearer "
+            "token, instead of POWERBI_PUSH_URL"
+        ),
+    )
+    parser.add_argument(
+        "--workspace-id",
+        default=None,
+        metavar="GUID",
+        help=(
+            "workspace (group) containing --dataset-id; without it the "
+            "dataset is resolved in My workspace. Requires --dataset-id."
+        ),
+    )
+    args = parser.parse_args(argv)
+    if args.workspace_id and not args.dataset_id:
+        parser.error("--workspace-id requires --dataset-id")
+    return args
 
 
 def main(argv=None):
     args = parse_args(argv)
 
+    require_push_url = not args.dry_run and not args.dataset_id
     try:
-        env = _load_env()
+        env = _load_env(require_push_url)
         since = _parse_iso8601(args.since, "--since") if args.since else None
         before = _parse_iso8601(args.before, "--before") if args.before else None
     except BackfillError as exc:
@@ -233,8 +268,17 @@ def main(argv=None):
         return 0
 
     try:
-        push_in_batches(env["POWERBI_PUSH_URL"], pbi_rows, args.batch_size)
-    except PowerBIError as exc:
+        if args.dataset_id:
+            token = get_access_token()
+
+            def push_batch(batch):
+                push_table_rows(token, args.dataset_id, "RealTimeData", batch, args.workspace_id)
+
+        else:
+            push_batch = lambda batch: push_rows(env["POWERBI_PUSH_URL"], batch)  # noqa: E731
+
+        push_in_batches(push_batch, pbi_rows, args.batch_size)
+    except (PowerBIError, CreateDatasetError) as exc:
         print(f"error: push failed: {exc}", file=sys.stderr)
         return 1
 
