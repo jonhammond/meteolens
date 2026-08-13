@@ -28,9 +28,18 @@ services:
         sync: false
       - key: INGEST_TOKEN
         sync: false
-      # Optional: unset until M7 publishes the report. While unset the page
-      # renders a "report pending" placeholder instead of an iframe.
-      - key: POWERBI_EMBED_URL
+      # Service-principal embed ("Embed for your customers"). While any of
+      # the five are unset the page renders a "report pending" placeholder
+      # instead of the live report.
+      - key: POWERBI_TENANT_ID
+        sync: false
+      - key: POWERBI_CLIENT_ID
+        sync: false
+      - key: POWERBI_CLIENT_SECRET
+        sync: false
+      - key: POWERBI_WORKSPACE_ID
+        sync: false
+      - key: POWERBI_REPORT_ID
         sync: false
       # Paid Open-Meteo key — routes fetches to customer-api.open-meteo.com
       # with a per-key quota. Required on Render: the free keyless API is

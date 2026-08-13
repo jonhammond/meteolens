@@ -15,14 +15,11 @@
 
   <main>
     <section class="report-section" aria-label="Power BI report">
-      {% if powerbi_embed_url %}
-        <div class="iframe-wrap">
-          <iframe
-            src="{{ powerbi_embed_url }}"
-            title="MeteoLens Power BI report"
-            loading="lazy"
-            allowfullscreen>
-          </iframe>
+      {% if embed_configured %}
+        <div id="report-container"></div>
+        <div class="report-pending" id="report-pending" hidden>
+          <p>Full report coming soon.</p>
+          <p class="report-pending-sub">The embedded Power BI dashboard will appear here once it's published.</p>
         </div>
       {% else %}
         <div class="report-pending">
@@ -96,5 +93,86 @@
   <footer class="page-footer">
     <p>Data from Open-Meteo. Times shown in UTC.</p>
   </footer>
+
+  {% if embed_configured %}
+    <script src="{{ url_for('static', filename='powerbi.min.js') }}"></script>
+    <script>
+      (function () {
+        // Any fetch/embed failure just leaves the "report pending"
+        // placeholder visible instead of an empty/broken container.
+        var container = document.getElementById("report-container");
+        var pending = document.getElementById("report-pending");
+        var report = null;
+
+        function showPending() {
+          container.hidden = true;
+          pending.hidden = false;
+        }
+
+        function scheduleRefresh(expiresAt) {
+          var msUntilExpiry = new Date(expiresAt).getTime() - Date.now();
+          var refreshInMs = Math.max(msUntilExpiry - 2 * 60 * 1000, 10 * 1000);
+          setTimeout(refreshToken, refreshInMs);
+        }
+
+        function refreshToken() {
+          fetch("/api/embed-token")
+            .then(function (resp) {
+              if (!resp.ok) {
+                throw new Error("embed-token fetch failed");
+              }
+              return resp.json();
+            })
+            .then(function (data) {
+              if (report) {
+                report
+                  .setAccessToken(data.token)
+                  .then(function () {
+                    scheduleRefresh(data.expiresAt);
+                  })
+                  .catch(function () {
+                    setTimeout(refreshToken, 60 * 1000);
+                  });
+              } else {
+                embedReport(data);
+              }
+            })
+            .catch(function () {
+              if (!report) {
+                showPending();
+                return;
+              }
+              // The current token keeps working until it expires; keep
+              // retrying so the report survives a transient fetch failure.
+              setTimeout(refreshToken, 60 * 1000);
+            });
+        }
+
+        function embedReport(data) {
+          var models = window["powerbi-client"].models;
+          var config = {
+            type: "report",
+            tokenType: models.TokenType.Embed,
+            accessToken: data.token,
+            embedUrl: data.embedUrl,
+            id: data.reportId,
+            settings: {
+              filterPaneEnabled: false,
+              navContentPaneEnabled: false,
+            },
+          };
+          try {
+            report = window.powerbi.embed(container, config);
+          } catch (err) {
+            showPending();
+            return;
+          }
+          scheduleRefresh(data.expiresAt);
+        }
+
+        refreshToken();
+      })();
+    </script>
+  {% endif %}
 </body>
 </html>

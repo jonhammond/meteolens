@@ -134,22 +134,19 @@ main {
   margin-bottom: 2.5rem;
 }
 
-.iframe-wrap {
+#report-container {
   position: relative;
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 16 / 9;
+  min-height: 240px;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
 }
 
-.iframe-wrap iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+#report-container iframe {
   border: 0;
 }
 

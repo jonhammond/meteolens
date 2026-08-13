@@ -3,6 +3,8 @@
 M3 adds the ingest endpoint (dual write to Supabase + Power BI) and the
 read-only latest-conditions endpoint the M4 cards will consume. M4 adds the
 server-rendered page that displays those cards plus the Power BI embed.
+GET /api/embed-token mints the service-principal embed token the page's
+inline script fetches to render that report client-side (see app/embed.py).
 """
 
 import hmac
@@ -10,7 +12,8 @@ from datetime import datetime
 
 from flask import Blueprint, current_app, jsonify, render_template, request
 
-from app import db, ingest
+from app import db, embed, ingest
+from app.embed import EmbedError
 
 bp = Blueprint("main", __name__)
 
@@ -36,8 +39,9 @@ def healthz():
 def index():
     """Latest-conditions page: one card per location plus the Power BI embed.
 
-    POWERBI_EMBED_URL is None until M7, so the template falls back to a
-    "report pending" placeholder instead of an iframe with an empty src.
+    embed_configured is False until all five POWERBI_* vars are set, so the
+    template falls back to a "report pending" placeholder instead of trying
+    to embed a report with no way to fetch a token.
     """
     cfg = current_app.config["METEOLENS"]
     client = db.build_client(cfg)
@@ -45,7 +49,7 @@ def index():
     for reading in readings:
         reading["recorded_at_display"] = _format_recorded_at(reading["recorded_at"])
     return render_template(
-        "index.html", readings=readings, powerbi_embed_url=cfg.POWERBI_EMBED_URL
+        "index.html", readings=readings, embed_configured=cfg.embed_configured
     )
 
 
@@ -73,3 +77,23 @@ def api_latest():
     cfg = current_app.config["METEOLENS"]
     client = db.build_client(cfg)
     return jsonify(db.fetch_latest_per_location(client)), 200
+
+
+@bp.get("/api/embed-token")
+def api_embed_token():
+    """View-only Power BI embed token for the public report.
+
+    No auth: same access a Publish-to-web link would have given. 503 when
+    unconfigured or when the upstream AAD/Power BI calls fail, so the
+    frontend falls back to the "report pending" placeholder.
+    """
+    cfg = current_app.config["METEOLENS"]
+    if not cfg.embed_configured:
+        return jsonify(error="embed not configured"), 503
+
+    try:
+        return jsonify(embed.get_embed_token(cfg)), 200
+    except EmbedError:
+        # Generic message only: never leak upstream error detail that could
+        # embed a status code tied to the client secret or tenant.
+        return jsonify(error="embed token unavailable"), 503
