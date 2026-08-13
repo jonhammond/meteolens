@@ -2,6 +2,8 @@
 
 A lightweight, $0-to-run weather dashboard for Colorado. MeteoLens fetches hourly "current conditions" from the [Open-Meteo API](https://open-meteo.com/), stores them in Supabase Postgres, and visualizes them in a Power BI report embedded at **[meteolens.jonhammond.org](https://meteolens.jonhammond.org)**.
 
+![MeteoLens dashboard showing KPI cards, humidity/temperature and wind/AQI trend charts, a Colorado city map, and per-city current-conditions cards](docs/meteolens.png)
+
 ## How it works
 
 ```
