@@ -43,27 +43,24 @@
         },
         {
           "name": "Precip Latest",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation_in]), 'RealTimeData'[recorded_at] = t)))",
-          "dataType": "Decimal",
-          "formatString": "#,0.00"
+          "expression": "VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation_in]), 'RealTimeData'[recorded_at] = t))) RETURN FORMAT(v, \"#,0.00\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" mm\", \" in.\")",
+          "dataType": "Text"
         },
         {
           "name": "Temp Latest",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m_f]), 'RealTimeData'[recorded_at] = t)))",
-          "dataType": "Decimal",
-          "formatString": "#,0.0"
+          "expression": "VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m_f]), 'RealTimeData'[recorded_at] = t))) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" °C\", \" °F\")",
+          "dataType": "Text"
         },
         {
           "name": "Cloud Latest",
           "expression": "AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[cloud_cover]), 'RealTimeData'[recorded_at] = t))",
           "dataType": "Decimal",
-          "formatString": "#,0.0"
+          "formatString": "#,0.0\"%\""
         },
         {
           "name": "Wind Latest",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m_mph]), 'RealTimeData'[recorded_at] = t)))",
-          "dataType": "Decimal",
-          "formatString": "#,0.0"
+          "expression": "VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m]), 'RealTimeData'[recorded_at] = t)), AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[wind_speed_10m_mph]), 'RealTimeData'[recorded_at] = t))) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" km/h\", \" mph\")",
+          "dataType": "Text"
         },
         {
           "name": "AQI Latest",
@@ -72,48 +69,8 @@
           "formatString": "#,0"
         },
         {
-          "name": "Precip Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Precipitation (\" & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"mm\", \"in\") & \")\"",
-          "dataType": "Text"
-        },
-        {
-          "name": "Temp Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Temperature (\" & UNICHAR(176) & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"C\", \"F\") & \")\"",
-          "dataType": "Text"
-        },
-        {
-          "name": "Cloud Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Cloud Cover (%)\"",
-          "dataType": "Text"
-        },
-        {
-          "name": "Wind Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"Wind Speed (\" & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"km/h\", \"mph\") & \")\"",
-          "dataType": "Text"
-        },
-        {
-          "name": "AQI Title",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Avg. \") & \"AQI\"",
-          "dataType": "Text"
-        },
-        {
-          "name": "Precip Color",
-          "expression": "VAR v = AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[precipitation]), 'RealTimeData'[recorded_at] = t)) RETURN IF(ISBLANK(v), \"#cccccc\", IF(v > 0, \"#1f77b4\", \"#cccccc\"))",
-          "dataType": "Text"
-        },
-        {
-          "name": "Temp Color",
-          "expression": "VAR v = AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[temperature_2m]), 'RealTimeData'[recorded_at] = t)) RETURN IF(ISBLANK(v), \"#cccccc\", SWITCH(TRUE(), v <= 5.0, \"#3b82f6\", v >= 27.0, \"#ef4444\", \"#22c55e\"))",
-          "dataType": "Text"
-        },
-        {
           "name": "Cloud Color",
           "expression": "VAR v = AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[cloud_cover]), 'RealTimeData'[recorded_at] = t)) RETURN IF(ISBLANK(v), \"#cccccc\", SWITCH(TRUE(), v <= 25, \"#facc15\", v <= 75, \"#94a3b8\", \"#475569\"))",
-          "dataType": "Text"
-        },
-        {
-          "name": "AQI Color",
-          "expression": "VAR v = AVERAGEX(VALUES('RealTimeData'[location]), VAR t = CALCULATE(MAX('RealTimeData'[recorded_at])) RETURN CALCULATE(AVERAGE('RealTimeData'[us_aqi]), 'RealTimeData'[recorded_at] = t)) RETURN IF(ISBLANK(v), \"#cccccc\", SWITCH(TRUE(), v <= 50, \"#22c55e\", v <= 100, \"#facc15\", v <= 150, \"#f97316\", v <= 200, \"#ef4444\", v <= 300, \"#a855f7\", \"#881337\"))",
           "dataType": "Text"
         },
         {
@@ -127,12 +84,6 @@
           "expression": "SWITCH(SELECTEDVALUE('RealTimeData'[location]), \"Denver\",-104.98470, \"Colorado Springs\",-104.82136, \"Pueblo\",-104.60914, \"Leadville\",-106.29252, \"Fort Collins\",-105.08442, \"Durango\",-107.88007, \"Grand Junction\",-108.55065, \"Glenwood Springs\",-107.32478, \"Steamboat Springs\",-106.83172, \"Castle Rock\",-104.85609, \"Longmont\",-105.10193, \"Boulder\",-105.27055)",
           "dataType": "Decimal",
           "formatString": "0.00000"
-        },
-        {
-          "name": "Selected Unit",
-          "expression": "SELECTEDVALUE('Units'[unit], \"Metric\")",
-          "dataType": "Text",
-          "description": "Unit toggle: reads the Units slicer selection, defaults to Metric"
         },
         {
           "name": "Humidity Temp Title",

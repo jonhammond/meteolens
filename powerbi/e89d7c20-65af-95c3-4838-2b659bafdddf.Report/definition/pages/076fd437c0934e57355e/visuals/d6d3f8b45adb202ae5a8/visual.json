@@ -70,14 +70,8 @@
             },
             "text": {
               "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
-                    }
-                  },
-                  "Property": "Cloud Title"
+                "Literal": {
+                  "Value": "'Clouds'"
                 }
               }
             },
@@ -98,7 +92,7 @@
             "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'center'"
                 }
               }
             },
@@ -161,6 +155,13 @@
                       "Value": "'#252423'"
                     }
                   }
+                }
+              }
+            },
+            "horizontalAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
                 }
               }
             }
