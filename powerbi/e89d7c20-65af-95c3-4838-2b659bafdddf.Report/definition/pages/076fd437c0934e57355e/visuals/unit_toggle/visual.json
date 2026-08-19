@@ -1,5 +1,14 @@
 {
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "unit_toggle",
+  "position": {
+    "x": 1011.6282527881041,
+    "y": 489.15985130111522,
+    "z": 3000,
+    "height": 41.87360594795539,
+    "width": 208.41635687732341,
+    "tabOrder": 5
+  },
   "visual": {
     "visualType": "slicer",
     "query": {
@@ -7,7 +16,6 @@
         "Values": {
           "projections": [
             {
-              "queryRef": "Units.unit",
               "field": {
                 "Column": {
                   "Expression": {
@@ -18,7 +26,9 @@
                   "Property": "unit"
                 }
               },
-              "nativeQueryRef": "unit"
+              "queryRef": "Units.unit",
+              "nativeQueryRef": "unit",
+              "active": true
             }
           ]
         }
@@ -80,23 +90,52 @@
                   "Value": "false"
                 }
               }
+            },
+            "filter": {
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "u",
+                    "Entity": "Units",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "u"
+                                }
+                              },
+                              "Property": "unit"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'Imperial'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
             }
           }
         }
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "position": {
-    "x": 976,
-    "y": 120,
-    "width": 280,
-    "height": 56,
-    "z": 3000,
-    "tabOrder": 3
-  },
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
-  "filterConfig": {
-    "filters": []
   }
 }

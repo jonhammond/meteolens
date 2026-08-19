@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "context_card",
   "position": {
-    "x": 992,
-    "y": 192,
-    "width": 264,
-    "height": 408,
+    "x": 717.5613382899628,
+    "y": 97.070631970260223,
     "z": 5000,
-    "tabOrder": 5
+    "height": 369.24907063197026,
+    "width": 538.64684014869886,
+    "tabOrder": 3
   },
   "visual": {
     "visualType": "cardVisual",
@@ -20,8 +20,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "Selected City"
@@ -36,8 +36,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "Condition"
@@ -51,8 +51,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "Temp Card"
@@ -67,8 +67,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "Humidity Card"
@@ -83,8 +83,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "Wind Card"
@@ -99,8 +99,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "AQI Card"
@@ -245,8 +245,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": []
   }
 }

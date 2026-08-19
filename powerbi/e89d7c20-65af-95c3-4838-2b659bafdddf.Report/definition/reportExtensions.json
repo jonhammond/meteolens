@@ -79,13 +79,13 @@
         },
         {
           "name": "City Lat",
-          "expression": "SWITCH(SELECTEDVALUE('RealTimeData'[location]), \"Denver\",39.73915, \"Colorado Springs\",38.83388, \"Pueblo\",38.25445, \"Leadville\",39.25082, \"Fort Collins\",40.58526, \"Durango\",37.27528, \"Grand Junction\",39.06387, \"Glenwood Springs\",39.55054, \"Steamboat Springs\",40.48498, \"Castle Rock\",39.37221, \"Longmont\",40.16721, \"Boulder\",40.01499, \"Trinidad\",37.16946, \"Sterling\",40.62554, \"Dinosaur\",40.24358, \"Cortez\",37.34888, \"Walsh\",37.38613)",
+          "expression": "SWITCH(SELECTEDVALUE('RealTimeData'[location]), \"Denver\",39.73915, \"Colorado Springs\",38.83388, \"Pueblo\",38.25445, \"Leadville\",39.25082, \"Fort Collins\",40.58526, \"Durango\",37.27528, \"Grand Junction\",39.06387, \"Glenwood Springs\",39.55054, \"Steamboat Springs\",40.48498, \"Castle Rock\",39.27, \"Longmont\",40.27, \"Boulder\",40.06, \"Trinidad\",37.16946, \"Sterling\",40.62554, \"Dinosaur\",40.24358, \"Cortez\",37.34888, \"Walsh\",37.38613)",
           "dataType": "Decimal",
           "formatString": "0.00000"
         },
         {
           "name": "City Long",
-          "expression": "SWITCH(SELECTEDVALUE('RealTimeData'[location]), \"Denver\",-104.98470, \"Colorado Springs\",-104.82136, \"Pueblo\",-104.60914, \"Leadville\",-106.29252, \"Fort Collins\",-105.08442, \"Durango\",-107.88007, \"Grand Junction\",-108.55065, \"Glenwood Springs\",-107.32478, \"Steamboat Springs\",-106.83172, \"Castle Rock\",-104.85609, \"Longmont\",-105.10193, \"Boulder\",-105.27055, \"Trinidad\",-104.50054, \"Sterling\",-103.20771, \"Dinosaur\",-109.01456, \"Cortez\",-108.58593, \"Walsh\",-102.27824)",
+          "expression": "SWITCH(SELECTEDVALUE('RealTimeData'[location]), \"Denver\",-104.98470, \"Colorado Springs\",-104.82136, \"Pueblo\",-104.60914, \"Leadville\",-106.29252, \"Fort Collins\",-105.08442, \"Durango\",-107.88007, \"Grand Junction\",-108.55065, \"Glenwood Springs\",-107.32478, \"Steamboat Springs\",-106.83172, \"Castle Rock\",-104.55, \"Longmont\",-104.55, \"Boulder\",-105.65, \"Trinidad\",-104.50054, \"Sterling\",-103.20771, \"Dinosaur\",-109.01456, \"Cortez\",-108.58593, \"Walsh\",-102.27824)",
           "dataType": "Decimal",
           "formatString": "0.00000"
         },

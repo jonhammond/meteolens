@@ -1,5 +1,14 @@
 {
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "city_map",
+  "position": {
+    "x": 23.791821561338288,
+    "y": 66.617100371747213,
+    "z": 4000,
+    "height": 516.75836431226764,
+    "width": 662.364312267658,
+    "tabOrder": 2
+  },
   "visual": {
     "visualType": "azureMap",
     "query": {
@@ -7,7 +16,6 @@
         "Category": {
           "projections": [
             {
-              "queryRef": "RealTimeData.location",
               "field": {
                 "Column": {
                   "Expression": {
@@ -18,7 +26,9 @@
                   "Property": "location"
                 }
               },
+              "queryRef": "RealTimeData.location",
               "nativeQueryRef": "location",
+              "active": true,
               "displayName": "City"
             }
           ]
@@ -30,8 +40,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "City Long"
@@ -49,8 +59,8 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
+                      "Schema": "extension",
+                      "Entity": "RealTimeData"
                     }
                   },
                   "Property": "City Lat"
@@ -70,7 +80,28 @@
             "autoZoom": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
+                }
+              }
+            },
+            "centerLatitude": {
+              "expr": {
+                "Literal": {
+                  "Value": "39.022784952030264D"
+                }
+              }
+            },
+            "centerLongitude": {
+              "expr": {
+                "Literal": {
+                  "Value": "-105.52043953502641D"
+                }
+              }
+            },
+            "zoom": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
                 }
               }
             },
@@ -105,7 +136,7 @@
             "showLabels": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -182,7 +213,6 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
         {
@@ -197,7 +227,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Map'"
+                  "Value": "'Tap a city on the map for local weather.'"
                 }
               }
             },
@@ -229,15 +259,7 @@
           }
         }
       ]
-    }
-  },
-  "position": {
-    "x": 24,
-    "y": 80,
-    "width": 944,
-    "height": 520,
-    "z": 4000,
-    "tabOrder": 4
-  },
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json"
+    },
+    "drillFilterOtherVisuals": true
+  }
 }
