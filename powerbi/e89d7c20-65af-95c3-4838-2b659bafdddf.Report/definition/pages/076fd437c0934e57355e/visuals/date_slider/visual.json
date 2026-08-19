@@ -44,7 +44,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Date range (last 30 days)'"
+                  "Value": "'Date range'"
                 }
               }
             },

@@ -18,7 +18,8 @@
                   "Property": "location"
                 }
               },
-              "nativeQueryRef": "location"
+              "nativeQueryRef": "location",
+              "displayName": "City"
             }
           ]
         },

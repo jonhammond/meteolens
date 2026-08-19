@@ -1,7 +1,7 @@
 {
-  "name": "city_slicer",
+  "name": "city_list",
   "visual": {
-    "visualType": "slicer",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
         "Values": {
@@ -18,77 +18,32 @@
                   "Property": "location"
                 }
               },
-              "nativeQueryRef": "location"
+              "nativeQueryRef": "location",
+              "displayName": "City"
             }
           ]
         }
       }
     },
     "objects": {
-      "data": [
+      "grid": [
         {
           "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'VerticalList'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "selection": [
-        {
-          "properties": {
-            "singleSelect": {
+            "gridVertical": {
               "expr": {
                 "Literal": {
                   "Value": "false"
                 }
               }
             },
-            "selectAllCheckboxEnabled": {
+            "gridHorizontal": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "header": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Cities'"
+                  "Value": "false"
                 }
               }
             },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "items": [
-        {
-          "properties": {
-            "textSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "10D"
-                }
-              }
-            },
-            "padding": {
+            "rowPadding": {
               "expr": {
                 "Literal": {
                   "Value": "2D"
@@ -97,9 +52,57 @@
             }
           }
         }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "position": {
     "x": 40,

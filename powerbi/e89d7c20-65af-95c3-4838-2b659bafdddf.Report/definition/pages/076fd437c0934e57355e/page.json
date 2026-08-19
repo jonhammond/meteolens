@@ -19,5 +19,12 @@
         }
       }
     ]
-  }
+  },
+  "visualInteractions": [
+    {
+      "source": "date_slider",
+      "target": "city_list",
+      "type": "NoFilter"
+    }
+  ]
 }
