@@ -146,14 +146,154 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Entity": "RealTimeData",
-                          "Schema": "extension"
+                    "Conditional": {
+                      "Cases": [
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 4,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "RealTimeData",
+                                      "Schema": "extension"
+                                    }
+                                  },
+                                  "Property": "AQI Avg"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "50D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#22c55e'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 4,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "RealTimeData",
+                                      "Schema": "extension"
+                                    }
+                                  },
+                                  "Property": "AQI Avg"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "100D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#facc15'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 4,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "RealTimeData",
+                                      "Schema": "extension"
+                                    }
+                                  },
+                                  "Property": "AQI Avg"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "150D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#f97316'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 4,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "RealTimeData",
+                                      "Schema": "extension"
+                                    }
+                                  },
+                                  "Property": "AQI Avg"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "200D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#ef4444'"
+                            }
+                          }
+                        },
+                        {
+                          "Condition": {
+                            "Comparison": {
+                              "ComparisonKind": 4,
+                              "Left": {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "RealTimeData",
+                                      "Schema": "extension"
+                                    }
+                                  },
+                                  "Property": "AQI Avg"
+                                }
+                              },
+                              "Right": {
+                                "Literal": {
+                                  "Value": "250D"
+                                }
+                              }
+                            }
+                          },
+                          "Value": {
+                            "Literal": {
+                              "Value": "'#a855f7'"
+                            }
+                          }
                         }
-                      },
-                      "Property": "AQI Bar Color"
+                      ],
+                      "DefaultValue": {
+                        "Literal": {
+                          "Value": "'#881337'"
+                        }
+                      }
                     }
                   }
                 }
@@ -161,7 +301,13 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.AQI Avg"
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ]
           }
         }
       ]
