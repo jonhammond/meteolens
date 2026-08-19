@@ -48,6 +48,7 @@ HOURLY_FIELDS = (
     "weather_code",
     "wind_speed_10m",
     "wind_gusts_10m",
+    "snow_depth",
 )
 
 TIMEOUT_SECONDS = 10

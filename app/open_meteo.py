@@ -1,6 +1,6 @@
 """HTTP client for the Open-Meteo `current` forecast and air-quality blocks.
 
-Fetches the 9 weather measurement fields plus 3 air-quality fields
+Fetches the 10 weather measurement fields plus 3 air-quality fields
 ingest.py needs, for all locations in one batched request per API. Kept
 free of Supabase/Flask concerns so it can be tested in isolation.
 """
@@ -31,6 +31,7 @@ CURRENT_FIELDS = (
     "weather_code",
     "wind_speed_10m",
     "wind_gusts_10m",
+    "snow_depth",  # meters
 )
 
 AQ_CURRENT_FIELDS = ("us_aqi", "pm10", "pm2_5", "us_aqi_pm2_5", "us_aqi_pm10")
@@ -128,7 +129,7 @@ def fetch_current_batch(coords, api_key=None):
     input order; with N=1 it stays a single object. This handles both shapes
     and always returns a list, in input order.
 
-    Returns a list of dicts, each with the 9 measurement fields plus
+    Returns a list of dicts, each with the 10 measurement fields plus
     `recorded_at` (a timezone-aware UTC datetime derived from `current.time`).
     Retries exactly once on 5xx/connection errors for the whole batch; 4xx
     responses are not retried since a bad request won't fix itself.

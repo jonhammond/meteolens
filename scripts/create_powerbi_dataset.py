@@ -81,9 +81,11 @@ REALTIME_DATA_COLUMNS = (
     "wind_speed_10m_mph",
     "wind_gusts_10m_mph",
     "precipitation_in",
+    "snow_depth",
+    "snow_depth_in",
 )
 
-assert len(REALTIME_DATA_COLUMNS) == 29, "RealTimeData must have exactly 29 columns"
+assert len(REALTIME_DATA_COLUMNS) == 31, "RealTimeData must have exactly 31 columns"
 
 
 def _realtime_column_type(name):

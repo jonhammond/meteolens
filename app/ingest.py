@@ -150,6 +150,12 @@ def _mm_to_in(mm):
     return round(mm / 25.4, 3)
 
 
+def _m_to_in(m):
+    if m is None:
+        return None
+    return round(m / 0.0254, 3)
+
+
 def build_pbi_row(location_name, reading):
     """Enrich one raw reading into the exact row shape pushed to Power BI.
 
@@ -193,6 +199,8 @@ def build_pbi_row(location_name, reading):
         "wind_speed_10m_mph": _kmh_to_mph(reading["wind_speed_10m"]),
         "wind_gusts_10m_mph": _kmh_to_mph(reading["wind_gusts_10m"]),
         "precipitation_in": _mm_to_in(reading["precipitation"]),
+        "snow_depth": reading.get("snow_depth"),
+        "snow_depth_in": _m_to_in(reading.get("snow_depth")),
     }
 
 
@@ -260,6 +268,7 @@ def run_ingest(cfg):
                     "weather_code": reading["weather_code"],
                     "wind_speed_10m": reading["wind_speed_10m"],
                     "wind_gusts_10m": reading["wind_gusts_10m"],
+                    "snow_depth": reading.get("snow_depth"),
                     "us_aqi": reading["us_aqi"],
                     "pm10": reading["pm10"],
                     "pm2_5": reading["pm2_5"],

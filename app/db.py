@@ -22,6 +22,7 @@ NUMERIC_FIELDS = (
     "wind_gusts_10m",
     "pm10",
     "pm2_5",
+    "snow_depth",
 )
 SMALLINT_FIELDS = (
     "relative_humidity_2m",
@@ -135,9 +136,9 @@ def fetch_latest_per_location(client):
         .select(
             "location_id,recorded_at,temperature_2m,apparent_temperature,"
             "relative_humidity_2m,dew_point_2m,precipitation,cloud_cover,weather_code,"
-            "wind_speed_10m,wind_gusts_10m,us_aqi,pm10,pm2_5,us_aqi_pm2_5,us_aqi_pm10,"
+            "wind_speed_10m,wind_gusts_10m,snow_depth,us_aqi,pm10,pm2_5,us_aqi_pm2_5,us_aqi_pm10,"
             "temperature_2m_f,apparent_temperature_f,dew_point_2m_f,"
-            "wind_speed_10m_mph,wind_gusts_10m_mph,precipitation_in"
+            "wind_speed_10m_mph,wind_gusts_10m_mph,precipitation_in,snow_depth_in"
         )
         .in_("location_id", list(by_id.keys()))
         .order("recorded_at", desc=True)
@@ -172,6 +173,7 @@ def fetch_latest_per_location(client):
                 "weather_desc": describe(reading["weather_code"]),
                 "wind_speed_10m": reading["wind_speed_10m"],
                 "wind_gusts_10m": reading["wind_gusts_10m"],
+                "snow_depth": reading["snow_depth"],
                 "us_aqi": reading["us_aqi"],
                 "pm10": reading["pm10"],
                 "pm2_5": reading["pm2_5"],
@@ -183,6 +185,7 @@ def fetch_latest_per_location(client):
                 "wind_speed_10m_mph": reading["wind_speed_10m_mph"],
                 "wind_gusts_10m_mph": reading["wind_gusts_10m_mph"],
                 "precipitation_in": reading["precipitation_in"],
+                "snow_depth_in": reading["snow_depth_in"],
             }
         )
     results.sort(key=lambda r: r["location"])
