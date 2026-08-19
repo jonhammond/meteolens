@@ -90,6 +90,11 @@
           "formatString": "0.00000"
         },
         {
+          "name": "AQI Bar Color",
+          "expression": "VAR v = AVERAGE('RealTimeData'[us_aqi]) RETURN SWITCH(TRUE(), ISBLANK(v), BLANK(), v <= 50, \"#22c55e\", v <= 100, \"#facc15\", v <= 150, \"#f97316\", v <= 200, \"#ef4444\", v <= 250, \"#a855f7\", \"#881337\")",
+          "dataType": "Text"
+        },
+        {
           "name": "Humidity Temp Title",
           "expression": "\"Atmospheric Moisture and Temperature\"",
           "dataType": "Text"

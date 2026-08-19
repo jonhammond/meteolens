@@ -146,8 +146,14 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#118DFF'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "RealTimeData",
+                          "Schema": "extension"
+                        }
+                      },
+                      "Property": "AQI Bar Color"
                     }
                   }
                 }
