@@ -91,12 +91,12 @@
         },
         {
           "name": "Humidity Temp Title",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"Humidity (%), Temperature (°C) & Precipitation (mm)\", \"Humidity (%), Temperature (°F) & Precipitation (in)\")",
+          "expression": "\"Atmospheric Moisture and Temperature\"",
           "dataType": "Text"
         },
         {
           "name": "Wind Title",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \"Wind (km/h)\", \"Wind (mph)\")",
+          "expression": "\"Wind Speed and Gust Trends\"",
           "dataType": "Text"
         }
       ]
