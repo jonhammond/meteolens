@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "6b2bd47ba38d5b19",
   "position": {
-    "x": 352,
-    "y": 192,
-    "width": 904,
-    "height": 244,
-    "z": 1000,
-    "tabOrder": 4
+    "x": 24,
+    "y": 624,
+    "width": 1232,
+    "height": 248,
+    "z": 6000,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "lineClusteredColumnComboChart",
@@ -33,40 +33,6 @@
             }
           ]
         },
-        "Y2": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
-                    }
-                  },
-                  "Property": "Temp Feels Like"
-                }
-              },
-              "queryRef": "RealTimeData.Temp Feels Like",
-              "nativeQueryRef": "Temp Feels Like"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
-                    }
-                  },
-                  "Property": "Temp Actual"
-                }
-              },
-              "queryRef": "RealTimeData.Temp Actual",
-              "nativeQueryRef": "Temp Actual"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -78,11 +44,61 @@
                       "Schema": "extension"
                     }
                   },
-                  "Property": "RH Avg"
+                  "Property": "Precip Avg"
                 }
               },
-              "queryRef": "RealTimeData.RH Avg",
-              "nativeQueryRef": "RH Avg"
+              "queryRef": "RealTimeData.Precip Avg",
+              "nativeQueryRef": "Precip Avg",
+              "displayName": "Precipitation"
+            }
+          ]
+        },
+        "Y2": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Relative Humidity (%)"
+                }
+              },
+              "queryRef": "RealTimeData.Relative Humidity (%)",
+              "nativeQueryRef": "Relative Humidity (%)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Temperature"
+                }
+              },
+              "queryRef": "RealTimeData.Temperature",
+              "nativeQueryRef": "Temperature"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Dew Point"
+                }
+              },
+              "queryRef": "RealTimeData.Dew Point",
+              "nativeQueryRef": "Dew Point"
             }
           ]
         }
@@ -223,42 +239,6 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#CFE3F5'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "RealTimeData.RH Avg"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#E66C37'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "RealTimeData.Temp Actual"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
                       "Value": "'#12239E'"
                     }
                   }
@@ -267,7 +247,61 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Temp Feels Like"
+            "metadata": "RealTimeData.Precip Avg"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#107C10'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "RealTimeData.Relative Humidity (%)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D64550'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "RealTimeData.Temperature"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#8AD4EB'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "RealTimeData.Dew Point"
           }
         }
       ],
@@ -283,7 +317,7 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Temp Actual"
+            "metadata": "RealTimeData.Relative Humidity (%)"
           }
         },
         {
@@ -297,7 +331,21 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Temp Feels Like"
+            "metadata": "RealTimeData.Temperature"
+          }
+        },
+        {
+          "properties": {
+            "strokeWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "2.5D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "RealTimeData.Dew Point"
           }
         }
       ]

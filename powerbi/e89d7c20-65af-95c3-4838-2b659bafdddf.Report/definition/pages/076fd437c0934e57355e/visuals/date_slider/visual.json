@@ -62,12 +62,12 @@
     "drillFilterOtherVisuals": true
   },
   "position": {
-    "x": 40,
-    "y": 156,
+    "x": 976,
+    "y": 16,
     "width": 280,
-    "height": 84,
-    "z": 100,
-    "tabOrder": 3
+    "height": 88,
+    "z": 2000,
+    "tabOrder": 2
   },
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "filterConfig": {

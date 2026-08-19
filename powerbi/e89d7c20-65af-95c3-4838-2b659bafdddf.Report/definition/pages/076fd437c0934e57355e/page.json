@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
   "name": "076fd437c0934e57355e",
   "displayName": "Page 1",
-  "displayOption": "FitToPage",
-  "height": 720,
+  "displayOption": "FitToWidth",
+  "height": 1440,
   "width": 1280,
   "objects": {
     "outspacePane": [
@@ -19,12 +19,5 @@
         }
       }
     ]
-  },
-  "visualInteractions": [
-    {
-      "source": "date_slider",
-      "target": "city_list",
-      "type": "NoFilter"
-    }
-  ]
+  }
 }

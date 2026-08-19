@@ -2,15 +2,15 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "26b8110e0a14dd900601",
   "position": {
-    "x": 352,
-    "y": 452,
-    "width": 904,
-    "height": 244,
-    "z": 2000,
-    "tabOrder": 5
+    "x": 24,
+    "y": 896,
+    "width": 1232,
+    "height": 248,
+    "z": 7000,
+    "tabOrder": 7
   },
   "visual": {
-    "visualType": "lineClusteredColumnComboChart",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
         "Category": {
@@ -33,40 +33,6 @@
             }
           ]
         },
-        "Y2": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
-                    }
-                  },
-                  "Property": "Wind Sustained"
-                }
-              },
-              "queryRef": "RealTimeData.Wind Sustained",
-              "nativeQueryRef": "Wind Sustained"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "RealTimeData",
-                      "Schema": "extension"
-                    }
-                  },
-                  "Property": "Wind Gust"
-                }
-              },
-              "queryRef": "RealTimeData.Wind Gust",
-              "nativeQueryRef": "Wind Gust"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -78,11 +44,26 @@
                       "Schema": "extension"
                     }
                   },
-                  "Property": "AQI Avg"
+                  "Property": "Sustained"
                 }
               },
-              "queryRef": "RealTimeData.AQI Avg",
-              "nativeQueryRef": "AQI Avg"
+              "queryRef": "RealTimeData.Sustained",
+              "nativeQueryRef": "Sustained"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Gust"
+                }
+              },
+              "queryRef": "RealTimeData.Gust",
+              "nativeQueryRef": "Gust"
             }
           ]
         }
@@ -110,20 +91,6 @@
       "valueAxis": [
         {
           "properties": {
-            "secShow": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "secShowAxisTitle": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
             "showAxisTitle": {
               "expr": {
                 "Literal": {
@@ -131,28 +98,7 @@
                 }
               }
             },
-            "secRoundRange": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "switchAxisPosition": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
             "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "secFontSize": {
               "expr": {
                 "Literal": {
                   "Value": "9D"
@@ -223,7 +169,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#CFE3F5'"
+                      "Value": "'#6B007B'"
                     }
                   }
                 }
@@ -231,7 +177,7 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.AQI Avg"
+            "metadata": "RealTimeData.Sustained"
           }
         },
         {
@@ -249,25 +195,7 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Wind Gust"
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#12239E'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "RealTimeData.Wind Sustained"
+            "metadata": "RealTimeData.Gust"
           }
         }
       ],
@@ -283,7 +211,7 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Wind Gust"
+            "metadata": "RealTimeData.Sustained"
           }
         },
         {
@@ -297,7 +225,7 @@
             }
           },
           "selector": {
-            "metadata": "RealTimeData.Wind Sustained"
+            "metadata": "RealTimeData.Gust"
           }
         }
       ]
@@ -315,7 +243,7 @@
                       "Schema": "extension"
                     }
                   },
-                  "Property": "Wind AQI Title"
+                  "Property": "Wind Title"
                 }
               }
             },
