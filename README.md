@@ -28,7 +28,7 @@ Every hour, a scheduled trigger calls a token-protected ingest endpoint on the F
 
 ## Tracked locations
 
-Twelve Colorado cities: Denver, Colorado Springs, Pueblo, Leadville, Fort Collins, Durango, Grand Junction, Glenwood Springs, Steamboat Springs, Castle Rock, Longmont, and Boulder. Locations live in a database table, so adding or removing one is a SQL insert — no redeploy.
+Seventeen Colorado cities and towns: Denver, Colorado Springs, Pueblo, Leadville, Fort Collins, Durango, Grand Junction, Glenwood Springs, Steamboat Springs, Castle Rock, Longmont, Boulder, Trinidad, Sterling, Dinosaur, Cortez, and Walsh. Locations live in a database table, so adding or removing one is a SQL insert — no redeploy.
 
 ## Project status
 

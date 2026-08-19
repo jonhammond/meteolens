@@ -111,6 +111,11 @@ CITY_ROWS = [
     {"city": "Castle Rock", "latitude": 39.37221, "longitude": -104.85609},
     {"city": "Longmont", "latitude": 40.16721, "longitude": -105.10193},
     {"city": "Boulder", "latitude": 40.01499, "longitude": -105.27055},
+    {"city": "Trinidad", "latitude": 37.16946, "longitude": -104.50054},
+    {"city": "Sterling", "latitude": 40.62554, "longitude": -103.20771},
+    {"city": "Dinosaur", "latitude": 40.24358, "longitude": -109.01456},
+    {"city": "Cortez", "latitude": 37.34888, "longitude": -108.58593},
+    {"city": "Walsh", "latitude": 37.38613, "longitude": -102.27824},
 ]
 
 
