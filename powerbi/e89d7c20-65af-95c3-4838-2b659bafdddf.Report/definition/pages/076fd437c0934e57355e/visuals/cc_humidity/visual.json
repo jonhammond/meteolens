@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "cc_humidity",
   "position": {
-    "x": 861,
+    "x": 860,
     "y": 302,
     "z": 5010,
     "height": 148,
-    "width": 116,
+    "width": 124,
     "tabOrder": 13
   },
   "visual": {
@@ -35,6 +35,30 @@
       }
     },
     "objects": {
+      "outline": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          },
+          "selector": { "id": "default" }
+        }
+      ],
+      "cardCalloutArea": [
+        {
+          "properties": {
+            "backgroundTransparency": { "expr": { "Literal": { "Value": "100D" } } }
+          }
+        }
+      ],
+      "fillCustom": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } },
+            "transparency": { "expr": { "Literal": { "Value": "100D" } } }
+          },
+          "selector": { "id": "default" }
+        }
+      ],
       "layout": [
         {
           "properties": {
@@ -94,7 +118,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "18D"
+                  "Value": "16D"
                 }
               }
             },
@@ -124,6 +148,13 @@
       ]
     },
     "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          }
+        }
+      ],
       "title": [
         {
           "properties": {

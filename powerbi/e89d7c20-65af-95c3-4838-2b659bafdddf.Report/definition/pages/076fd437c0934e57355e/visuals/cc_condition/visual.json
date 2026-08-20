@@ -5,7 +5,7 @@
     "x": 733,
     "y": 248,
     "z": 5040,
-    "height": 40,
+    "height": 50,
     "width": 508,
     "tabOrder": 11
   },
@@ -35,6 +35,30 @@
       }
     },
     "objects": {
+      "outline": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          },
+          "selector": { "id": "default" }
+        }
+      ],
+      "cardCalloutArea": [
+        {
+          "properties": {
+            "backgroundTransparency": { "expr": { "Literal": { "Value": "100D" } } }
+          }
+        }
+      ],
+      "fillCustom": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } },
+            "transparency": { "expr": { "Literal": { "Value": "100D" } } }
+          },
+          "selector": { "id": "default" }
+        }
+      ],
       "layout": [
         {
           "properties": {
@@ -119,6 +143,15 @@
           },
           "selector": {
             "id": "default"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
           }
         }
       ]
