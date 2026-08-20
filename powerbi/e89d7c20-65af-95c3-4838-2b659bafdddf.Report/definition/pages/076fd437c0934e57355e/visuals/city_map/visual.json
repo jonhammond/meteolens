@@ -317,10 +317,10 @@
       "padding": [
         {
           "properties": {
-            "top": { "expr": { "Literal": { "Value": "12D" } } },
-            "bottom": { "expr": { "Literal": { "Value": "12D" } } },
-            "left": { "expr": { "Literal": { "Value": "12D" } } },
-            "right": { "expr": { "Literal": { "Value": "12D" } } }
+            "top": { "expr": { "Literal": { "Value": "0D" } } },
+            "bottom": { "expr": { "Literal": { "Value": "0D" } } },
+            "left": { "expr": { "Literal": { "Value": "0D" } } },
+            "right": { "expr": { "Literal": { "Value": "0D" } } }
           }
         }
       ]

@@ -50,6 +50,17 @@
           "type": "BaseTheme"
         }
       ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "axis_frame.png",
+          "path": "axis_frame.png",
+          "type": "Image"
+        }
+      ]
     }
   ],
   "settings": {

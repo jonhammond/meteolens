@@ -88,6 +88,20 @@
       }
     },
     "objects": {
+      "plotArea": [
+        {
+          "properties": {
+            "image": {
+              "image": {
+                "name": { "expr": { "Literal": { "Value": "'axis_frame.png'" } } },
+                "url": { "expr": { "ResourcePackageItem": { "PackageName": "RegisteredResources", "PackageType": 1, "ItemName": "axis_frame.png" } } },
+                "scaling": { "expr": { "Literal": { "Value": "'Fit'" } } }
+              }
+            },
+            "transparency": { "expr": { "Literal": { "Value": "0D" } } }
+          }
+        }
+      ],
       "valueAxis": [
         {
           "properties": {
