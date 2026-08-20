@@ -29,11 +29,11 @@
       {% endif %}
     </section>
 
-    <section aria-label="Latest conditions by location">
+    <section class="units-imperial" aria-label="Latest conditions by location">
       {% if readings %}
         <div class="unit-toggle" id="unit-toggle" role="group" aria-label="Units" hidden>
-          <button type="button" data-unit="metric" aria-pressed="true">Metric</button>
-          <button type="button" data-unit="imperial" aria-pressed="false">Imperial</button>
+          <button type="button" data-unit="imperial" aria-pressed="true">Imperial</button>
+          <button type="button" data-unit="metric" aria-pressed="false">Metric</button>
         </div>
         <div class="card-grid">
           {% for r in readings %}
@@ -209,14 +209,14 @@
         });
       }
 
-      var storedUnit = "metric";
+      var storedUnit = "imperial";
       try {
         var stored = localStorage.getItem(STORAGE_KEY);
-        if (stored === "imperial") {
-          storedUnit = "imperial";
+        if (stored === "metric") {
+          storedUnit = "metric";
         }
       } catch (err) {
-        // localStorage unavailable (e.g. Safari private mode); default to metric.
+        // localStorage unavailable (e.g. Safari private mode); default to imperial.
       }
       applyUnit(storedUnit);
       toggle.hidden = false;
