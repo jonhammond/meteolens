@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "unit_toggle",
   "position": {
-    "x": 1047.74,
-    "y": 478.69144981412637,
+    "x": 1035.79,
+    "y": 486.69,
     "z": 3000,
     "height": 66,
     "width": 208.41635687732341,

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "a1b2c3d4e5f60718293a",
+  "position": {
+    "x": 717.5613382899628,
+    "y": 474.69,
+    "z": 1900,
+    "height": 128.68,
+    "width": 538.6468401486989,
+    "tabOrder": 16
+  },
+  "visual": {
+    "visualType": "basicShape",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "shapeType": { "expr": { "Literal": { "Value": "'rectangle'" } } }
+          }
+        }
+      ],
+      "fill": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "fillColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#FFFFFF'" } } } } }
+          }
+        }
+      ],
+      "line": [
+        {
+          "properties": {
+            "weight": { "expr": { "Literal": { "Value": "0D" } } },
+            "roundEdge": { "expr": { "Literal": { "Value": "8D" } } }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "false" } } }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": { "expr": { "Literal": { "Value": "true" } } },
+            "preset": { "expr": { "Literal": { "Value": "'BottomRight'" } } },
+            "color": { "solid": { "color": { "expr": { "Literal": { "Value": "'#000000'" } } } } },
+            "transparency": { "expr": { "Literal": { "Value": "85D" } } },
+            "position": { "expr": { "Literal": { "Value": "'Outer'" } } }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": false
+  },
+  "filterConfig": {
+    "filters": []
+  },
+  "isHidden": false
+}

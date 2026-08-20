@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "date_slider",
   "position": {
-    "x": 717.5613382899628,
-    "y": 478.69144981412637,
+    "x": 729.56,
+    "y": 486.69,
     "z": 2000,
     "height": 104.68401486988847,
     "width": 259.80669144981414,
