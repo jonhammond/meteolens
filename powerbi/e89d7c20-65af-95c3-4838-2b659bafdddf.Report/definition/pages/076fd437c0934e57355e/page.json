@@ -3,8 +3,25 @@
   "name": "076fd437c0934e57355e",
   "displayName": "Page 1",
   "displayOption": "FitToWidth",
-  "height": 1440,
+  "height": 1600,
   "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "city_map",
+      "target": "6b2bd47ba38d5b19",
+      "type": "DataFilter"
+    },
+    {
+      "source": "city_map",
+      "target": "26b8110e0a14dd900601",
+      "type": "DataFilter"
+    },
+    {
+      "source": "city_map",
+      "target": "aqi_trend",
+      "type": "DataFilter"
+    }
+  ],
   "objects": {
     "outspacePane": [
       {

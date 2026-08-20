@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "unit_toggle",
   "position": {
-    "x": 1011.6282527881041,
-    "y": 489.15985130111522,
+    "x": 1047.74,
+    "y": 478.69144981412637,
     "z": 3000,
-    "height": 41.87360594795539,
+    "height": 66,
     "width": 208.41635687732341,
     "tabOrder": 5
   },
@@ -67,7 +67,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Toggle Unit Display'"
                 }
               }
             }

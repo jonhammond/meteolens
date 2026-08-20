@@ -5,7 +5,7 @@
     "x": 24,
     "y": 624,
     "width": 1232,
-    "height": 248,
+    "height": 300,
     "z": 6000,
     "tabOrder": 6
   },
@@ -123,6 +123,39 @@
       }
     },
     "objects": {
+      "y2Axis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Temp Axis Label"
+                }
+              }
+            }
+          }
+        }
+      ],
       "valueAxis": [
         {
           "properties": {
@@ -136,14 +169,40 @@
             "secShowAxisTitle": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "secTitleText": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Temp Axis Label"
                 }
               }
             },
             "showAxisTitle": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "RealTimeData",
+                      "Schema": "extension"
+                    }
+                  },
+                  "Property": "Precip Axis Label"
                 }
               }
             },
@@ -191,7 +250,21 @@
             "position": {
               "expr": {
                 "Literal": {
-                  "Value": "'TopCenter'"
+                  "Value": "'Top'"
+                }
+              }
+            },
+            "showTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
               }
             }

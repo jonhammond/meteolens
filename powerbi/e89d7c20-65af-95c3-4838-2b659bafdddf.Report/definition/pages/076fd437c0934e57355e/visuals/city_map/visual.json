@@ -149,7 +149,25 @@
             "bubbleRadius": {
               "expr": {
                 "Literal": {
-                  "Value": "5L"
+                  "Value": "7L"
+                }
+              }
+            },
+            "strokeColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "strokeWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
                 }
               }
             }
@@ -169,7 +187,14 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "9D"
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI Semibold'"
                 }
               }
             },
@@ -205,7 +230,7 @@
             "backgroundTransparency": {
               "expr": {
                 "Literal": {
-                  "Value": "30L"
+                  "Value": "0L"
                 }
               }
             }

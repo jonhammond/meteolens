@@ -3,9 +3,9 @@
   "name": "aqi_trend",
   "position": {
     "x": 24,
-    "y": 1168,
+    "y": 1272,
     "width": 1232,
-    "height": 248,
+    "height": 300,
     "z": 8000,
     "tabOrder": 8
   },
@@ -79,7 +79,14 @@
             "showAxisTitle": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'US AQI'"
                 }
               }
             },
