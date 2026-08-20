@@ -47,6 +47,33 @@ def describe(code: int | None) -> str:
     return WMO_CODES.get(code, f"Unknown ({code})")
 
 
+def icon(code: int | None) -> str:
+    """Weather emoji for a WMO code.
+
+    Mirrors the report's `Condition Icon` DAX measure: substring match on the
+    description, same branch order ("freezing" lands in the snow branch, and
+    "mainly clear" must be tested before plain "clear").
+    """
+    d = describe(code).lower()
+    if "thunder" in d:
+        return "⛈️"  # ⛈️
+    if "snow" in d or "freezing" in d:
+        return "\U0001f328️"  # 🌨️
+    if "drizzle" in d or "rain" in d or "shower" in d:
+        return "\U0001f327️"  # 🌧️
+    if "fog" in d:
+        return "\U0001f32b️"  # 🌫️
+    if "overcast" in d:
+        return "☁️"  # ☁️
+    if "cloud" in d:
+        return "⛅"  # ⛅ (no VS-16, matching the DAX)
+    if "mainly clear" in d:
+        return "\U0001f324️"  # 🌤️
+    if "clear" in d or "sun" in d:
+        return "☀️"  # ☀️
+    return ""
+
+
 def sql_seed() -> str:
     """Idempotent insert block for the weather_codes table."""
     values = ",\n".join(

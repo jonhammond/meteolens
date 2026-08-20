@@ -38,18 +38,26 @@
         <div class="card-grid">
           {% for r in readings %}
             <article class="card">
-              <h2 class="card-title">{{ r.location }}</h2>
-              <p class="card-desc">{{ r.weather_desc or "—" }}</p>
-
-              <p class="card-temp">
-                <span class="val-metric">{{ "%.0f"|format(r.temperature_2m) ~ "°C" if r.temperature_2m is not none else "—" }}</span>
-                <span class="val-imperial">{{ "%.0f"|format(r.temperature_2m_f) ~ "°F" if r.temperature_2m_f is not none else "—" }}</span>
-              </p>
-              <p class="card-feelslike">
-                Feels like
-                <span class="val-metric">{{ "%.0f"|format(r.apparent_temperature) ~ "°C" if r.apparent_temperature is not none else "—" }}</span>
-                <span class="val-imperial">{{ "%.0f"|format(r.apparent_temperature_f) ~ "°F" if r.apparent_temperature_f is not none else "—" }}</span>
-              </p>
+              <div class="card-header">
+                <div class="card-condition">
+                  <h2 class="card-title">{{ r.location }}</h2>
+                  {% if r.weather_icon %}
+                    <p class="card-icon" aria-hidden="true">{{ r.weather_icon }}</p>
+                  {% endif %}
+                  <p class="card-desc">{{ r.weather_desc or "—" }}</p>
+                </div>
+                <div class="card-readings">
+                  <p class="card-temp">
+                    <span class="val-metric">{{ "%.0f"|format(r.temperature_2m) ~ "°C" if r.temperature_2m is not none else "—" }}</span>
+                    <span class="val-imperial">{{ "%.0f"|format(r.temperature_2m_f) ~ "°F" if r.temperature_2m_f is not none else "—" }}</span>
+                  </p>
+                  <p class="card-feelslike">
+                    Feels like
+                    <span class="val-metric">{{ "%.0f"|format(r.apparent_temperature) ~ "°C" if r.apparent_temperature is not none else "—" }}</span>
+                    <span class="val-imperial">{{ "%.0f"|format(r.apparent_temperature_f) ~ "°F" if r.apparent_temperature_f is not none else "—" }}</span>
+                  </p>
+                </div>
+              </div>
 
               <dl class="card-stats">
                 <div>

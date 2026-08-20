@@ -9,7 +9,7 @@ plus `.upsert(rows, on_conflict=...)`.
 
 from supabase import create_client
 
-from app.weather_codes import describe
+from app.weather_codes import describe, icon
 
 # numeric/smallint columns in weather_readings; used to coerce Open-Meteo's
 # measurement dict into JSON-safe values before insert.
@@ -171,6 +171,7 @@ def fetch_latest_per_location(client):
                 "cloud_cover": reading["cloud_cover"],
                 "weather_code": reading["weather_code"],
                 "weather_desc": describe(reading["weather_code"]),
+                "weather_icon": icon(reading["weather_code"]),
                 "wind_speed_10m": reading["wind_speed_10m"],
                 "wind_gusts_10m": reading["wind_gusts_10m"],
                 "snow_depth": reading["snow_depth"],
