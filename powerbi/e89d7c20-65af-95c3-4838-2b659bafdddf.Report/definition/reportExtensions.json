@@ -49,32 +49,62 @@
         },
         {
           "name": "Selected City",
-          "expression": "SELECTEDVALUE('RealTimeData'[location], \"All Cities (avg)\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), SELECTEDVALUE('RealTimeData'[location]), \"\")",
           "dataType": "Text"
         },
         {
           "name": "Condition",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR t = MAX('RealTimeData'[recorded_at]) RETURN CALCULATE(MIN('RealTimeData'[weather_desc]), 'RealTimeData'[recorded_at] = t), \"—\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR t = MAX('RealTimeData'[recorded_at]) RETURN CALCULATE(MIN('RealTimeData'[weather_desc]), 'RealTimeData'[recorded_at] = t), \"\")",
           "dataType": "Text"
         },
         {
           "name": "Temp Card",
-          "expression": "VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" °C\", \" °F\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" °C\", \" °F\"), \"\")",
           "dataType": "Text"
         },
         {
           "name": "Humidity Card",
-          "expression": "FORMAT(AVERAGE('RealTimeData'[relative_humidity_2m]), \"#,0.0\") & \" %\"",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), FORMAT(AVERAGE('RealTimeData'[relative_humidity_2m]), \"#,0.0\") & \" %\", \"\")",
           "dataType": "Text"
         },
         {
           "name": "Wind Card",
-          "expression": "VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" km/h\", \" mph\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" km/h\", \" mph\"), \"\")",
           "dataType": "Text"
         },
         {
           "name": "AQI Card",
-          "expression": "FORMAT(AVERAGE('RealTimeData'[us_aqi]), \"#,0\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), FORMAT(AVERAGE('RealTimeData'[us_aqi]), \"#,0\"), \"\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "CC Message",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"\", \"Please select a city on the map to view local weather conditions.\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "Condition Icon",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR t = MAX('RealTimeData'[recorded_at]) VAR d = CALCULATE(MIN('RealTimeData'[weather_desc]), 'RealTimeData'[recorded_at] = t) RETURN SWITCH(TRUE(), CONTAINSSTRING(d, \"thunder\"), UNICHAR(9928) & UNICHAR(65039), CONTAINSSTRING(d, \"snow\") || CONTAINSSTRING(d, \"freezing\"), UNICHAR(127784) & UNICHAR(65039), CONTAINSSTRING(d, \"drizzle\") || CONTAINSSTRING(d, \"rain\") || CONTAINSSTRING(d, \"shower\"), UNICHAR(127783) & UNICHAR(65039), CONTAINSSTRING(d, \"fog\"), UNICHAR(127787) & UNICHAR(65039), CONTAINSSTRING(d, \"overcast\"), UNICHAR(9729) & UNICHAR(65039), CONTAINSSTRING(d, \"cloud\"), UNICHAR(9925), CONTAINSSTRING(d, \"mainly clear\"), UNICHAR(127780) & UNICHAR(65039), CONTAINSSTRING(d, \"clear\") || CONTAINSSTRING(d, \"sun\"), UNICHAR(9728) & UNICHAR(65039), \"\"), \"\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "Temp Label",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"Temperature\", \"\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "Humidity Label",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"Humidity\", \"\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "Wind Label",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"Wind\", \"\")",
+          "dataType": "Text"
+        },
+        {
+          "name": "AQI Label",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), \"AQI\", \"\")",
           "dataType": "Text"
         },
         {
