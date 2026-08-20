@@ -180,7 +180,8 @@ main {
   position: relative;
   width: 100%;
   max-width: 100%;
-  aspect-ratio: 16 / 9;
+  /* match the report page canvas (1280x1600, FitToWidth) so the full page renders without an inner scrollbar */
+  aspect-ratio: 1280 / 1600;
   min-height: 240px;
   border-radius: var(--radius);
   overflow: hidden;

@@ -3,9 +3,9 @@
   "name": "cc_wind",
   "position": {
     "x": 987,
-    "y": 302,
+    "y": 324.7,
     "z": 5020,
-    "height": 148,
+    "height": 90,
     "width": 124,
     "tabOrder": 14
   },
@@ -185,6 +185,7 @@
                 }
               }
             },
+            "bold": { "expr": { "Literal": { "Value": "true" } } },
             "titleWrap": {
               "expr": {
                 "Literal": {

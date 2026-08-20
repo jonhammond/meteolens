@@ -3,9 +3,9 @@
   "name": "cc_temp",
   "position": {
     "x": 733,
-    "y": 302,
+    "y": 324.7,
     "z": 5000,
-    "height": 148,
+    "height": 90,
     "width": 124,
     "tabOrder": 12
   },
@@ -185,6 +185,7 @@
                 }
               }
             },
+            "bold": { "expr": { "Literal": { "Value": "true" } } },
             "titleWrap": {
               "expr": {
                 "Literal": {
