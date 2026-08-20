@@ -7,31 +7,31 @@
       "measures": [
         {
           "name": "Sustained",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Gust",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_gusts_10m]), AVERAGE('RealTimeData'[wind_gusts_10m_mph]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[wind_gusts_10m]), AVERAGE('RealTimeData'[wind_gusts_10m_mph]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Temperature",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Dew Point",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[dew_point_2m]), AVERAGE('RealTimeData'[dew_point_2m_f]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[dew_point_2m]), AVERAGE('RealTimeData'[dew_point_2m_f]))",
           "dataType": "Decimal",
           "formatString": "#,0.0"
         },
         {
           "name": "Precip Avg",
-          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[precipitation]), AVERAGE('RealTimeData'[precipitation_in]))",
+          "expression": "IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[precipitation]), AVERAGE('RealTimeData'[precipitation_in]))",
           "dataType": "Decimal",
           "formatString": "#,0.00"
         },
@@ -59,7 +59,7 @@
         },
         {
           "name": "Temp Card",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" °C\", \" °F\"), \"\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[temperature_2m]), AVERAGE('RealTimeData'[temperature_2m_f])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", \" °C\", \" °F\"), \"\")",
           "dataType": "Text"
         },
         {
@@ -69,7 +69,7 @@
         },
         {
           "name": "Wind Card",
-          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Metric\") = \"Metric\", \" km/h\", \" mph\"), \"\")",
+          "expression": "IF(HASONEVALUE('RealTimeData'[location]), VAR v = IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", AVERAGE('RealTimeData'[wind_speed_10m]), AVERAGE('RealTimeData'[wind_speed_10m_mph])) RETURN FORMAT(v, \"#,0.0\") & IF(SELECTEDVALUE('Units'[unit], \"Imperial\") = \"Metric\", \" km/h\", \" mph\"), \"\")",
           "dataType": "Text"
         },
         {
