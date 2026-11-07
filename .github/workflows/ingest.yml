@@ -33,4 +33,34 @@ jobs:
         run: |
           curl -sS --fail-with-body --max-time 120 \
             -X POST https://meteolens.jonhammond.org/api/ingest \
-            -H "Authorization: Bearer ${INGEST_TOKEN}"
+            -H "Authorization: Bearer ${INGEST_TOKEN}" \
+            -o ingest.json
+          cat ingest.json
+          echo
+          # The endpoint returns HTTP 200 even when every location failed; each
+          # key carries "ok", "skipped: ...", or "error: ...". Fail the run on
+          # any "error" so a broken upstream (expired API key, 429, DB outage)
+          # shows up as a red run and an email, not a green run with no rows.
+          errors=$(jq -r 'to_entries[] | select(.value | startswith("error")) | "\(.key): \(.value)"' ingest.json)
+          if [ -n "$errors" ]; then
+            echo "::error::ingest reported errors"
+            echo "$errors" >&2
+            exit 1
+          fi
+
+      - name: Verify fresh data landed
+        run: |
+          newest=$(curl -sS --fail --max-time 60 https://meteolens.jonhammond.org/api/latest \
+            | jq -r 'map(.recorded_at) | max // empty')
+          if [ -z "$newest" ]; then
+            echo "::error::/api/latest returned no recorded_at values"
+            exit 1
+          fi
+          newest_s=$(date -u -d "$newest" +%s)
+          now_s=$(date -u +%s)
+          age=$(( now_s - newest_s ))
+          echo "newest recorded_at: $newest (${age}s ago)"
+          if [ "$age" -gt 10800 ]; then
+            echo "::error::newest reading is older than 3 hours; ingest is not writing rows"
+            exit 1
+          fi
